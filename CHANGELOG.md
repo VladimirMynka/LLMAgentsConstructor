@@ -1,4 +1,4 @@
 # LLM Agent Constructor
 
-## 0.0.1
+## 1.0.0
 - [Simple python project] Realized first version that can be used
