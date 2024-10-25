@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "llm-agents-cunstructor"
+version = "0.0.1"
+description = ""
+authors = ["VladimirMynka <vladimirmynka@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+openai = "^1.52.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

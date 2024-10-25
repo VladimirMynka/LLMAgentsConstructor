@@ -1,0 +1,10 @@
+*.ipynb
+data
+logs
+.idea
+.vscode/*
+venv
+*.html
+*/__pycache__/*
+*/.pytest_cache/*
+scripts/*
