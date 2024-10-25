@@ -3,7 +3,7 @@ data
 logs
 .idea
 .vscode/*
-.venv
+venv
 *.html
 */__pycache__/*
 */.pytest_cache/*

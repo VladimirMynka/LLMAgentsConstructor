@@ -17,7 +17,7 @@ documents_store = DocumentsStore()
 
 client = AsyncOpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
-    base_url="https://api.vsegpt.ru/v1",
+    base_url=os.getenv("OPENAI_URL"),
 )
 
 
