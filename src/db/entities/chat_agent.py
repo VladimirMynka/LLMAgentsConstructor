@@ -9,7 +9,8 @@ class ChatAgent(AIAgent):
     __tablename__ = "ChatAgent"
 
     id: Mapped[int] = mapped_column(ForeignKey("AIAgent.id"), primary_key=True)
-    stopwords: Mapped[list[Stopword]] = relationship(Stopword, back_populates="agent")
+
+    stopwords: Mapped[list["Stopword"]] = relationship("Stopword", back_populates="agent")  # type: ignore
 
     __mapper_args__ = {
         "polymorphic_identity": "ChatAgent",

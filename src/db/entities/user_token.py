@@ -1,20 +1,18 @@
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.database import Base
-from src.db.entities.client import Client
-from src.db.entities.user import User
 
 
 class UserToken(Base):
     __tablename__ = "UserToken"
 
-    user_id: Mapped[int] = mapped_column(ForeignKey(User.id), primary_key=True)
-    client_id: Mapped[int] = mapped_column(ForeignKey(Client.id), primary_key=True)
-    token: Mapped[str] = mapped_column(String, nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("User.id"), primary_key=True)
+    client_id: Mapped[int] = mapped_column(ForeignKey("Client.id"), primary_key=True)
+    token: Mapped[str] = mapped_column(nullable=False)
 
-    user: Mapped[User] = relationship(User)
-    client: Mapped[Client] = relationship(Client)
+    user: Mapped["User"] = relationship("User")  # type: ignore
+    client: Mapped["Client"] = relationship("Client")  # type: ignore
 
     def __repr__(self):
         return f"""

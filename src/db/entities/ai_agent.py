@@ -1,10 +1,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.core.agents.agent_typings import GenerationSettings
 from src.db.entities.agent import Agent
-from src.db.entities.client import Client
-from src.db.entities.prompt import Prompt
 
 
 class AIAgent(Agent):
@@ -13,15 +10,11 @@ class AIAgent(Agent):
     id: Mapped[int] = mapped_column(ForeignKey("Agent.id"), primary_key=True)
     prompt_id: Mapped[int] = mapped_column(ForeignKey("Prompt.id"), nullable=False)
     client_id: Mapped[int] = mapped_column(ForeignKey("Client.id"), nullable=False)
-    settings_id: Mapped[int] = mapped_column(
-        ForeignKey("GenerationSettings.id"), nullable=False
-    )
+    settings_id: Mapped[int] = mapped_column(ForeignKey("Settings.id"), nullable=False)
 
-    prompt: Mapped[Prompt] = relationship("Prompt", back_populates="ai_agents")
-    client: Mapped[Client] = relationship("Client", back_populates="ai_agents")
-    settings: Mapped[GenerationSettings] = relationship(
-        "GenerationSettings", back_populates="ai_agents"
-    )
+    prompt: Mapped["Prompt"] = relationship("Prompt", back_populates="ai_agents")  # type: ignore
+    client: Mapped["Client"] = relationship("Client", back_populates="ai_agents")  # type: ignore
+    settings: Mapped["Settings"] = relationship("Settings", back_populates="ai_agents")  # type: ignore
 
     __mapper_args__ = {
         "polymorphic_identity": "ai_agent",

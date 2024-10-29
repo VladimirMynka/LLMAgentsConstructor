@@ -1,7 +1,7 @@
-from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.db.database import Base
+
 
 class Prompt(Base):
     __tablename__ = "Prompt"
