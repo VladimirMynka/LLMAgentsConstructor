@@ -2,9 +2,10 @@
 data
 logs
 .idea
-.vscode/*
+.vscode
 venv
 *.html
-*/__pycache__/*
-*/.pytest_cache/*
-scripts/*
+__pycache__
+.pytest_cache
+scripts
+my_variables
