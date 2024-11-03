@@ -5,8 +5,7 @@ from hashlib import sha256
 from sqlalchemy.orm import Session
 
 from src.db.decorators import use_repository
-from src.db.entities.auth_token import AuthToken
-from src.db.entities.user import User
+from src.db.entities import AuthToken, User
 from src.db.errors.user import (
     InvalidCredentialsError,
     NotAuthorizedError,
@@ -35,8 +34,9 @@ class UserService:
     expiration_days = 30
 
     @use_repository
+    @classmethod
     def register(
-        self, data: RegisterRequestModel, repository: Session
+        cls, data: RegisterRequestModel, repository: Session
     ) -> LoginResponseModel:
         """
         Register a new user
@@ -47,7 +47,7 @@ class UserService:
         Returns:
             LoginResponseModel - User data with auth token
         """
-        hashed_password = self._hash_password(data.password)
+        hashed_password = cls._hash_password(data.password)
 
         existing_user = repository.get_one(User, User.login == data.username)
         if existing_user:
@@ -59,10 +59,11 @@ class UserService:
         repository.commit()
         repository.refresh(new_user)
 
-        return self._auth_user(new_user, repository)
+        return cls._auth_user(new_user, repository)
 
     @use_repository
-    def login(self, data: LoginRequestModel, repository: Session) -> LoginResponseModel:
+    @classmethod
+    def login(cls, data: LoginRequestModel, repository: Session) -> LoginResponseModel:
         """
         Login a user
 
@@ -72,7 +73,7 @@ class UserService:
         Returns:
             LoginResponseModel - User data with auth token
         """
-        hashed_password = self._hash_password(data.password)
+        hashed_password = cls._hash_password(data.password)
 
         user = repository.get_one(
             User, User.login == data.username, User.password_hash == hashed_password
@@ -80,11 +81,12 @@ class UserService:
         if user is None:
             raise InvalidCredentialsError("Invalid credentials")
 
-        return self._auth_user(user, repository)
+        return cls._auth_user(user, repository)
 
     @use_repository
+    @classmethod
     def patch_user(
-        self, data: PatchUserModel, auth_token: str, repository: Session
+        cls, data: PatchUserModel, auth_token: str, repository: Session
     ) -> UserModel:
         """
         Change the login of an existing user
@@ -99,7 +101,7 @@ class UserService:
             NotAuthorizedError: If the authentication token is invalid
             UserAlreadyExistsError: If the new login is already in use
         """
-        user = self.get_user_by_auth_token(auth_token, repository)
+        user = cls.get_user_by_auth_token(auth_token, repository)
 
         existing_user = repository.get_one(User, User.login == data.new_login)
         if existing_user:
@@ -112,8 +114,9 @@ class UserService:
         return UserModel(id=user.id, login=user.login)
 
     @use_repository
+    @classmethod
     def change_password(
-        self, data: ChangePasswordRequestModel, auth_token: str, repository: Session
+        cls, data: ChangePasswordRequestModel, auth_token: str, repository: Session
     ) -> UserModel:
         """
         Change the password of an existing user.
@@ -128,14 +131,14 @@ class UserService:
             NotAuthorizedError: If the authentication token is invalid
             InvalidCredentialsError: If the old password is incorrect
         """
-        user = self.get_user_by_auth_token(auth_token, repository)
+        user = cls.get_user_by_auth_token(auth_token, repository)
 
-        hashed_old_password = self._hash_password(data.old_password)
+        hashed_old_password = cls._hash_password(data.old_password)
 
         if user.password_hash != hashed_old_password:
             raise InvalidCredentialsError("Old password is incorrect")
 
-        hashed_new_password = self._hash_password(data.new_password)
+        hashed_new_password = cls._hash_password(data.new_password)
         user.password_hash = hashed_new_password
 
         repository.commit()
@@ -144,8 +147,9 @@ class UserService:
         return UserModel(id=user.id, login=user.login)
 
     @use_repository
+    @classmethod
     def logout(
-        self,
+        cls,
         auth_token: str,
         repository: Session,
     ) -> LogoutResponseModel:
@@ -170,7 +174,8 @@ class UserService:
         return LogoutResponseModel(message="Logged out")
 
     @use_repository
-    def get_user_by_auth_token(self, auth_token: str, repository: Session) -> UserModel:
+    @classmethod
+    def get_user_by_auth_token(cls, auth_token: str, repository: Session) -> UserModel:
         """
         Get a user by authentication token.
 
@@ -190,8 +195,9 @@ class UserService:
         return UserModel(id=auth_token.user.id, login=auth_token.user.login)
 
     @use_repository
+    @classmethod
     def search_users_by_login(
-        self,
+        cls,
         data: SearchUserRequestModel,
         auth_token: str,
         repository: Session,
@@ -209,7 +215,7 @@ class UserService:
         Raises:
             NotAuthorizedError: If the authentication token is invalid
         """
-        self.get_user_by_auth_token(auth_token, repository)
+        cls.get_user_by_auth_token(auth_token, repository)
 
         users = repository.query(User).filter(User.login.ilike(f"%{data.query}%")).all()
 
@@ -218,8 +224,9 @@ class UserService:
         )
 
     @use_repository
+    @classmethod
     def get_user_by_id(
-        self, data: GetUserByIdRequestModel, auth_token: str, repository: Session
+        cls, data: GetUserByIdRequestModel, auth_token: str, repository: Session
     ) -> ExpandedUserModel:
         """
         Get a user by id.
@@ -236,7 +243,7 @@ class UserService:
             UserNotFoundError: If the user is not found
         """
         user = repository.get_one(User, User.id == data.user_id)
-        request_user = self.get_user_by_auth_token(auth_token, repository)
+        request_user = cls.get_user_by_auth_token(auth_token, repository)
 
         if user is None:
             raise UserNotFoundError("User not found")
@@ -253,8 +260,9 @@ class UserService:
         )
 
     @use_repository
+    @classmethod
     def get_user_groups(
-        self,
+        cls,
         data: GetUserByIdRequestModel,
         auth_token: str,
         repository: Session,
@@ -279,7 +287,7 @@ class UserService:
         if user is None:
             raise UserNotFoundError("User not found")
 
-        request_user = self.get_user_by_auth_token(auth_token, repository)
+        request_user = cls.get_user_by_auth_token(auth_token, repository)
         if request_user.id != data.user_id:
             raise UserHasNoPermissionsError("User has no permissions")
 
@@ -300,7 +308,8 @@ class UserService:
             for user_group in user.groups
         ]
 
-    def _auth_user(self, user: User, repository: Session) -> LoginResponseModel:
+    @classmethod
+    def _auth_user(cls, user: User, repository: Session) -> LoginResponseModel:
         """
         Authenticate a user (helper method for login and register)
 
@@ -313,7 +322,7 @@ class UserService:
         """
         auth_token = AuthToken(
             token=secrets.token_hex(16),
-            expiration_date=datetime.now() + timedelta(days=self.expiration_days),
+            expiration_date=datetime.now() + timedelta(days=cls.expiration_days),
             user=user,
         )
 
@@ -323,5 +332,6 @@ class UserService:
 
         return LoginResponseModel(id=user.id, auth_token=auth_token.token)
 
-    def _hash_password(self, password: str) -> str:
+    @staticmethod
+    def _hash_password(password: str) -> str:
         return sha256(password.encode()).hexdigest()

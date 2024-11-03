@@ -13,6 +13,14 @@
 
 ## Group
 `POST /api/groups/create` - Create group
-`GET /api/groups` - Get all groups 
 `GET /api/groups/{group_id}` - Get full group info
-``
+`GET /api/groups/{group_id}/owner` - Get group owner
+`POST /api/groups/{group_id}/leave` - Leave group
+`GET /api/groups/{group_id}/members` - Get group members
+`GET /api/groups/{group_id}/members/{user_id}` - Get group member info
+`PATCH /api/groups/{group_id}/members/{user_id}` - Update group member info
+`DELETE /api/groups/{group_id}/members/{user_id}` - Delete group member
+`POST /api/groups/{group_id}/members` - Add group member
+`GET /api/groups/{group_id}/graphs` - Get group graphs
+`PATCH /api/groups/{group_id}` - Update group info
+`DELETE /api/groups/{group_id}` - Delete group

@@ -16,15 +16,14 @@ class UserGroup(Base):
     )
 
     owner: Mapped[bool] = mapped_column(default=False)
-    add_users: Mapped[bool] = mapped_column(default=False)
-    edit_users_permissions: Mapped[bool] = mapped_column(default=False)
-    delete_users: Mapped[bool] = mapped_column(default=False)
+    change_members: Mapped[bool] = mapped_column(default=False)
     add_graphs: Mapped[bool] = mapped_column(default=False)
-    edit_graphs_permissions: Mapped[bool] = mapped_column(default=False)
+    run_graphs: Mapped[bool] = mapped_column(default=False)
+    change_graphs_permissions: Mapped[bool] = mapped_column(default=False)
     delete_graphs: Mapped[bool] = mapped_column(default=False)
 
     user: Mapped["User"] = relationship(back_populates="groups")  # type: ignore
-    group: Mapped["Group"] = relationship(back_populates="users")  # type: ignore
+    group: Mapped["Group"] = relationship(back_populates="members")  # type: ignore
 
     def __repr__(self):
         return (
