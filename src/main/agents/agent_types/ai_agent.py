@@ -2,7 +2,7 @@ import logging
 
 from openai import AsyncOpenAI
 
-from src.core.agents.agent_typings import (
+from src.main.agents.agent_typings import (
     Document,
     DocumentName,
     DocumentsStore,
@@ -11,7 +11,7 @@ from src.core.agents.agent_typings import (
     ModelName,
     Role,
 )
-from src.core.agents.base_agent import BaseAgent
+from src.main.agents.base_agent import BaseAgent
 
 
 class AIAgent(BaseAgent):

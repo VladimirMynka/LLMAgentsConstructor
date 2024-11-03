@@ -2,19 +2,19 @@ import asyncio
 
 from openai import AsyncOpenAI
 
-from src.core.agents.agent_parameters import (
+from src.main.agents.agent_parameters import (
     AgentParameters,
     AIAgentParameters,
     ChatAgentParameters,
     CriticAgentParameters,
     HardCodeAgentParameters,
 )
-from src.core.agents.agent_typings import DocumentsStore
-from src.core.agents.agent_types.ai_agent import AIAgent
-from src.core.agents.base_agent import BaseAgent
-from src.core.agents.agent_types.chat_agent import ChatAgent
-from src.core.agents.agent_types.critic_agent import CriticAgent
-from src.core.agents.agent_types.hard_code_agent import HardCodeAgent
+from src.main.agents.agent_typings import DocumentsStore
+from src.main.agents.agent_types.ai_agent import AIAgent
+from src.main.agents.base_agent import BaseAgent
+from src.main.agents.agent_types.chat_agent import ChatAgent
+from src.main.agents.agent_types.critic_agent import CriticAgent
+from src.main.agents.agent_types.hard_code_agent import HardCodeAgent
 
 
 class Pipeline:

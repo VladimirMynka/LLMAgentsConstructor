@@ -2,7 +2,7 @@
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 database = os.getenv("POSTGRES_DATABASE")
 user = os.getenv("POSTGRES_USERNAME")
@@ -17,6 +17,7 @@ connection_string = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dat
 # Step 3: Create a SQLAlchemy engine
 engine = create_engine(connection_string, echo=True)
 
+SessionLocal = sessionmaker(bind=engine)
 
 # Step 4: Define a base class
 class Base(DeclarativeBase):

@@ -3,7 +3,7 @@ from dataclasses import dataclass, fields
 from enum import Enum
 from typing import Any, Iterable, Self, TypeAlias
 
-from src.core.consts import DATA_DIR
+from src.main.consts import DATA_DIR
 
 
 class ModelName(Enum):

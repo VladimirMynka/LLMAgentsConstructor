@@ -2,7 +2,7 @@ import asyncio
 import logging
 from abc import abstractmethod
 
-from src.core.agents.agent_typings import DocumentName, DocumentsStore
+from src.main.agents.agent_typings import DocumentName, DocumentsStore
 
 
 class BaseAgent:

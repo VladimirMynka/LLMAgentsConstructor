@@ -3,7 +3,7 @@ import os
 from dataclasses import dataclass, fields
 from typing import Any, Callable, Coroutine
 
-from src.core.agents.agent_typings import DocumentName, GenerationSettings
+from src.main.agents.agent_typings import DocumentName, GenerationSettings
 
 
 class SimpliestUserMessageRequest:

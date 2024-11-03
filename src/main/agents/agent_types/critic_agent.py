@@ -1,6 +1,7 @@
 from openai import AsyncOpenAI
 
-from src.core.agents.agent_typings import (
+from src.main.agents.agent_types.ai_agent import AIAgent
+from src.main.agents.agent_typings import (
     Document,
     DocumentName,
     DocumentsStore,
@@ -8,7 +9,6 @@ from src.core.agents.agent_typings import (
     ModelName,
     Role,
 )
-from src.core.agents.agent_types.ai_agent import AIAgent
 
 
 class CriticAgent(AIAgent):

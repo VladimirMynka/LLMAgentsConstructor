@@ -2,16 +2,16 @@ import os
 
 from openai import AsyncOpenAI
 
-from src.core.agents.agent_parameters import (
+from src.main.agents.agent_parameters import (
     AIAgentParameters,
     ChatAgentParameters,
     CriticAgentParameters,
     HardCodeAgentParameters,
     SimpliestUserMessageRequest,
 )
-from src.core.agents.agent_typings import DocumentsStore, GenerationSettings, ModelName
-from src.core.pipeline import Pipeline
-from src.core.prompts import english_prompts
+from src.main.agents.agent_typings import DocumentsStore, GenerationSettings, ModelName
+from src.main.pipeline import Pipeline
+from src.main.prompts import english_prompts
 
 documents_store = DocumentsStore()
 
@@ -188,7 +188,6 @@ system_analyst = Pipeline(
         output_document_name="domain_model_critic_report",
         output_document_filename="1_system_analyst/12_domain_model_critic_report.md",
     ),
-    
     result_writer=HardCodeAgentParameters(
         hard_code_logic=lambda x: x,
         logging_info=(

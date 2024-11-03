@@ -2,14 +2,14 @@ from typing import Any, Callable, Coroutine
 
 from openai import AsyncOpenAI
 
-from src.core.agents.agent_typings import (
+from src.main.agents.agent_typings import (
     Document,
     DocumentName,
     DocumentsStore,
     GenerationSettings,
     Role,
 )
-from src.core.agents.agent_types.ai_agent import AIAgent
+from src.main.agents.agent_types.ai_agent import AIAgent
 
 
 class ChatAgent(AIAgent):
@@ -53,12 +53,12 @@ class ChatAgent(AIAgent):
         )
 
     async def _run(self) -> None:
-        await self.send()
+        await self.send_and_continue()
+
+    async def send_and_continue(self, message: str | None = None, role: Role = Role.user) -> None:
+        await self.send(message, role)
         while not self.stop_me():
             await self.send()
-
-    async def send_and_continue(self, message: str, role: Role = Role.user) -> None:
-        await self.send(message, role)
 
     async def send(self, message: str | None = None, role: Role = Role.user) -> None:
         if message is None:

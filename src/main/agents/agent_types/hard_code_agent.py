@@ -1,7 +1,7 @@
 from typing import Callable, TypeAlias
 
-from src.core.agents.agent_typings import Document, DocumentName, DocumentsStore
-from src.core.agents.base_agent import BaseAgent
+from src.main.agents.agent_typings import Document, DocumentName, DocumentsStore
+from src.main.agents.base_agent import BaseAgent
 
 HardCodeLogic: TypeAlias = Callable[[str], str]
 

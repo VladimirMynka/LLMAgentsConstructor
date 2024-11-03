@@ -1,5 +1,6 @@
 from .agent import Agent
 from .ai_agent import AIAgent
+from .auth_token import AuthToken
 from .chat_agent import ChatAgent
 from .client import Client
 from .copying_agent import CopyingAgent
@@ -21,6 +22,7 @@ from .user_token import UserToken
 __all__ = [
     "Agent",
     "AIAgent",
+    "AuthToken",
     "ChatAgent",
     "Client",
     "CopyingAgent",
