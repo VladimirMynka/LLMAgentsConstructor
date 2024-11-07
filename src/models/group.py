@@ -94,17 +94,6 @@ class MemberModel(BaseModel):
         }
 
 
-class GetGroupByIdRequestModel(BaseModel):
-    """
-    Get group by id request model.
-    """
-
-    id: int = Field(..., description="Group id")
-
-    class Config:
-        schema_extra = {"example": {"id": 1}}
-
-
 class ExpandGroupModel(BaseModel):
     """
     Expand group model.
@@ -140,11 +129,11 @@ class CreateGroupRequestModel(BaseModel):
         schema_extra = {"example": {"name": "TheBestGroup", "members": [1, 2, 3]}}
 
 
-
 class UpdateGroupRequestModel(BaseModel):
     """
     Update group request model.
     """
+
     name: str | None = Field(..., description="Group name")
 
     class Config:

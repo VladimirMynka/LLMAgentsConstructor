@@ -1,1 +1,1 @@
-from .user_controller import router as user_router
+from .users import router as user_router

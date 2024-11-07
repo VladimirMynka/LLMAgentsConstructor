@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src.api.controllers.user_controller import router
+from src.api.controllers.users import router
 from src.db.services.user_service import UserService
 
 

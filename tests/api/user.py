@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from src.api.controllers.user_controller import router
+from src.api.controllers.users import router
 
 client = TestClient(router)
 

@@ -8,6 +8,8 @@ from .critic_agent import CriticAgent
 from .document import Document
 from .document_template import DocumentTemplate
 from .graph import Graph
+from .graph_group import GraphGroup
+from .group import Group
 from .hard_code_agent import HardCodeAgent
 from .input_documents import InputDocuments
 from .model import Model
@@ -17,6 +19,7 @@ from .running import Running
 from .settings import Settings
 from .stopwords import Stopword
 from .user import User
+from .user_group import UserGroup
 from .user_token import UserToken
 
 __all__ = [
@@ -30,6 +33,8 @@ __all__ = [
     "Document",
     "DocumentTemplate",
     "Graph",
+    "GraphGroup",
+    "Group",
     "HardCodeAgent",
     "InputDocuments",
     "Model",
@@ -39,5 +44,6 @@ __all__ = [
     "Settings",
     "Stopword",
     "User",
+    "UserGroup",
     "UserToken",
 ]
