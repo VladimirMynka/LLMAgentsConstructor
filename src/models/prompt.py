@@ -3,28 +3,28 @@ from pydantic import BaseModel
 from src.models.group import GroupModel
 
 
-class ProviderModel(BaseModel):
+class PromptModel(BaseModel):
     """
-    Provider model.
+    Prompt model.
     """
 
     id: int
     name: str
-    url: str
+    text: str
 
     class Config:
         schema_extra = {
             "example": {
                 "id": 1,
-                "name": "OpenAI",
-                "url": "https://api.openai.com",
+                "name": "HelloWorld",
+                "text": "Write a hello world code",
             }
         }
 
 
-class ExpandProviderModel(ProviderModel):
+class ExpandPromptModel(PromptModel):
     """
-    Expand provider model.
+    Expand prompt model.
     """
 
     groups: list[GroupModel]
@@ -33,57 +33,57 @@ class ExpandProviderModel(ProviderModel):
         schema_extra = {
             "example": {
                 "id": 1,
-                "name": "OpenAI",
-                "url": "https://api.openai.com",
+                "name": "HelloWorld",
+                "text": "Write a hello world code",
                 "groups": [GroupModel.Config.schema_extra["example"]],
             }
         }
 
 
-class CreateProviderRequestModel(BaseModel):
+class CreatePromptRequestModel(BaseModel):
     """
-    Create provider request model.
+    Create prompt request model.
     """
 
     name: str
-    url: str
+    text: str
 
     class Config:
         schema_extra = {
             "example": {
-                "name": "OpenAI",
-                "url": "https://api.openai.com",
+                "name": "HelloWorld",
+                "text": "Write a hello world code",
             }
         }
 
 
-class UpdateProviderRequestModel(BaseModel):
+class UpdatePromptRequestModel(BaseModel):
     """
-    Update provider request model.
+    Update prompt request model.
     """
 
     name: str
-    url: str
+    text: str
 
     class Config:
         schema_extra = {
             "example": {
-                "name": "OpenAI",
-                "url": "https://api.openai.com",
+                "name": "HelloWorld",
+                "text": "Write a hello world code",
             }
         }
 
 
-class AddProviderToGroupRequestModel(BaseModel):
+class AddPromptToGroupRequestModel(BaseModel):
     """
-    Add provider to group request model.
+    Add prompt to group request model.
     """
 
-    provider_id: int
+    prompt_id: int
 
     class Config:
         schema_extra = {
             "example": {
-                "provider_id": 1,
+                "prompt_id": 1,
             }
         }

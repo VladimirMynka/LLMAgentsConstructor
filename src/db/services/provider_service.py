@@ -20,7 +20,7 @@ from src.models.provider import (
 
 class ProviderService:
     """
-    Group of methods for managing group providers.
+    Group of methods for managing providers.
     """
 
     @classmethod

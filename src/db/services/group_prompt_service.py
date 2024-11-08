@@ -2,37 +2,37 @@ from sqlalchemy.orm import Session
 
 from src.db.decorators import use_repository
 from src.db.entities.group import Group
-from src.db.entities.provider import Provider
-from src.db.entities.provider_group import ProviderGroup
+from src.db.entities.prompt import Prompt
+from src.db.entities.prompt_group import PromptGroup
 from src.db.errors.group import GroupNotFoundError, UserNotInGroupError
-from src.db.errors.provider import ProviderAlreadyInGroupError, ProviderNotFoundError
+from src.db.errors.prompt import PromptAlreadyInGroupError, PromptNotFoundError
 from src.db.services.member_service import MemberService
 from src.db.services.user_service import UserService
-from src.models.provider import AddProviderToGroupRequestModel, ProviderModel
+from src.models.prompt import AddPromptToGroupRequestModel, PromptModel
 
 
-class GroupProviderService:
+class GroupPromptService:
     """
-    Group of methods for managing group providers.
+    Group of methods for managing group prompts.
     """
 
     @classmethod
     @use_repository
-    def get_group_providers(
+    def get_group_prompts(
         cls,
         group_id: int,
         auth_token: str,
         repository: Session,
-    ) -> list[ProviderModel]:
+    ) -> list[PromptModel]:
         """
-        Get all providers available for current group.
+        Get all prompts available for current group.
 
         Args:
             group_id: int - Group id
             auth_token: str - Authentication token
 
         Returns:
-            list[ProviderModel] - List of providers
+            list[PromptModel] - List of prompts
 
         Raises:
             NotAuthorizedError: If the authentication token is invalid
@@ -48,43 +48,43 @@ class GroupProviderService:
         if not MemberService.check_user_in_group(user_model.id, group_id):
             raise UserNotInGroupError("User is not in the group")
 
-        providers: list[Provider] = [relation.provider for relation in group.providers]
+        prompts: list[Prompt] = [relation.prompt for relation in group.prompts]
 
         return [
-            ProviderModel(
-                id=provider.id,
-                name=provider.name,
-                url=provider.url,
+            PromptModel(
+                id=prompt.id,
+                name=prompt.name,
+                text=prompt.text,
             )
-            for provider in providers
+            for prompt in prompts
         ]
 
     @classmethod
     @use_repository
-    def add_group_provider(
+    def add_group_prompt(
         cls,
-        data: AddProviderToGroupRequestModel,
+        data: AddPromptToGroupRequestModel,
         group_id: int,
         auth_token: str,
         repository: Session,
-    ) -> list[ProviderModel]:
+    ) -> list[PromptModel]:
         """
-        Add provider to group.
+        Add prompt to group.
 
         Args:
-            data: AddProviderToGroupRequestModel - Add provider to group request model
+            data: AddPromptToGroupRequestModel - Add prompt to group request model
             group_id: int - Group id
             auth_token: str - Authentication token
 
         Returns:
-            list[ProviderModel] - List of providers
+            list[PromptModel] - List of prompts
 
         Raises:
             NotAuthorizedError: If the authentication token is invalid
             GroupNotFoundError: If the group is not found
             UserNotInGroupError: If the user is not in the group
-            ProviderNotFoundError: If the provider is not found
-            ProviderAlreadyInGroupError: If the provider is already in the group
+            PromptNotFoundError: If the prompt is not found
+            PromptAlreadyInGroupError: If the prompt is already in the group
         """
         user_model = UserService.get_user_by_auth_token(auth_token, repository)
 
@@ -95,18 +95,18 @@ class GroupProviderService:
         if not MemberService.check_user_in_group(user_model.id, group_id):
             raise UserNotInGroupError("User is not in the group")
 
-        provider = repository.get_one(Provider, Provider.id == data.provider_id)
-        if not provider:
-            raise ProviderNotFoundError("Provider not found")
+        prompt = repository.get_one(Prompt, Prompt.id == data.prompt_id)
+        if not prompt:
+            raise PromptNotFoundError("Prompt not found")
 
         if repository.get_one(
-            ProviderGroup,
-            ProviderGroup.provider_id == provider.id,
-            ProviderGroup.group_id == group_id,
+            PromptGroup,
+            PromptGroup.prompt_id == prompt.id,
+            PromptGroup.group_id == group_id,
         ):
-            raise ProviderAlreadyInGroupError("Provider already in the group")
+            raise PromptAlreadyInGroupError("Prompt already in the group")
 
-        repository.add(ProviderGroup(provider_id=provider.id, group_id=group_id))
+        repository.add(PromptGroup(prompt_id=prompt.id, group_id=group_id))
         repository.commit()
 
-        return cls.get_group_providers(group_id, auth_token, repository)
+        return cls.get_group_prompts(group_id, auth_token, repository)
