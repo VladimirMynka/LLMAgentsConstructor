@@ -94,22 +94,6 @@ class GroupService:
         group = cls.get_group_by_id(group_id, auth_token, repository)
         return group.owner
 
-    def get_members(cls, group_id: int) -> list[MemberModel]:
-        """
-        Get group members.
-
-        Args:
-            group_id: int - Group id
-
-        Returns:
-            list[MemberModel] - List of group members
-
-        Raises:
-            GroupNotFoundError: Group not found
-        """
-        group = cls.get_group_by_id(group_id)
-        return group.members
-
     def get_graphs(cls, group_id: int, auth_token: str) -> list[GraphModel]:
         """
         Get group graphs.

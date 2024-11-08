@@ -1,6 +1,6 @@
 from dataclasses import Field
 
-from openai import BaseModel
+from pydantic import BaseModel
 
 
 class GraphModel(BaseModel):

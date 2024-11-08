@@ -99,13 +99,37 @@ class MemberService:
         new_user_group = UserGroup(
             user_id=data.user_id,
             group_id=group_id,
-            **cls._calculate_add_permissions(data.permissions, adder)
+            **cls._calculate_add_permissions(data.permissions, adder),
         )
 
         repository.add(new_user_group)
         repository.commit()
 
         return GroupService.get_group_members(group_id)
+
+    @classmethod
+    def get_members(
+        cls,
+        group_id: int,
+        auth_token: str,
+    ) -> list[MemberModel]:
+        """
+        Get group members.
+
+        Args:
+            group_id: int - Group id
+            auth_token: str - Auth token
+
+        Returns:
+            list[MemberModel] - List of group members
+
+        Raises:
+            NotAuthorizedError: User not authorized
+            GroupNotFoundError: Group not found
+            UserNotInGroupError: User is not in the group
+        """
+        group = GroupService.get_group_by_id(group_id, auth_token)
+        return group.members
 
     @classmethod
     @use_repository
@@ -143,7 +167,9 @@ class MemberService:
 
         cls._transfer_ownership_if_needed(updater, member_id, group_id, repository)
 
-        updating_member = cls.check_user_in_group(member_id, group_id, repository, "Updating member is not in the group")
+        updating_member = cls.check_user_in_group(
+            member_id, group_id, repository, "Updating member is not in the group"
+        )
 
         cls._apply_update_permissions(data, updating_member, updater)
 
@@ -180,7 +206,9 @@ class MemberService:
         cls.check_permissions(remover_as_member, "change_members")
 
         if member_id == remover.id:
-            raise HaraKiriForbiddenError("Remover cannot delete himself from the group. Use leave_group method instead.")
+            raise HaraKiriForbiddenError(
+                "Remover cannot delete himself from the group. Use leave_group method instead."
+            )
 
         repository.delete(UserGroup, member_id, group_id)
         repository.commit()
@@ -309,8 +337,7 @@ class MemberService:
             )
             for permission in permissions.model_fields.keys()
         }
-        
-        
+
     @classmethod
     def _apply_update_permissions(
         cls,
@@ -329,5 +356,19 @@ class MemberService:
                     updater_permission=getattr(updater, permission),
                     old_permission=getattr(updating, permission),
                     is_owner=updater.owner,
-                )
+                ),
             )
+
+    @classmethod
+    @use_repository
+    def check_user_in_group(
+        cls,
+        user_id: int,
+        group_id: int,
+        repository: Session,
+    ) -> bool:
+        """
+        Check if user is in the group.
+        """
+        user_group = repository.get(UserGroup, (user_id, group_id))
+        return user_group is not None

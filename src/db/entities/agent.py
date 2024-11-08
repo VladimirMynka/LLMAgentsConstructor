@@ -4,7 +4,6 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.database import Base
-from src.db.entities.graph import Graph
 
 
 class AgentType(Enum):
@@ -25,8 +24,9 @@ class Agent(Base):
     start_log_message: Mapped[str] = mapped_column(nullable=True)
     finish_log_message: Mapped[str] = mapped_column(nullable=True)
 
-    graph_id: Mapped[int] = mapped_column(ForeignKey("Graph.id"), nullable=False)
-    graph: Mapped["Graph"] = relationship("Graph", back_populates="agents")  # type: ignore
+    node_id: Mapped[int] = mapped_column(ForeignKey("Node.id"), nullable=False)
+
+    node: Mapped["Node"] = relationship("Node")  # type: ignore
 
     output_documents: Mapped[list["DocumentTemplate"]] = relationship(  # type: ignore
         "DocumentTemplate", back_populates="agent"

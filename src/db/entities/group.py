@@ -13,6 +13,8 @@ class Group(Base):
 
     members: Mapped[list["UserGroup"]] = relationship(back_populates="group")  # type: ignore
     graphs: Mapped[list["GraphGroup"]] = relationship(back_populates="group")  # type: ignore
+    providers: Mapped[list["ProviderGroup"]] = relationship(back_populates="group")  # type: ignore
+    prompts: Mapped[list["GroupPrompt"]] = relationship(back_populates="group")  # type: ignore
     owner: Mapped["User"] = relationship()  # type: ignore
 
     def __repr__(self):

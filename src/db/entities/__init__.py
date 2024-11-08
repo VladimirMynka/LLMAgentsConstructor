@@ -2,7 +2,6 @@ from .agent import Agent
 from .ai_agent import AIAgent
 from .auth_token import AuthToken
 from .chat_agent import ChatAgent
-from .client import Client
 from .copying_agent import CopyingAgent
 from .critic_agent import CriticAgent
 from .document import Document
@@ -13,7 +12,11 @@ from .group import Group
 from .hard_code_agent import HardCodeAgent
 from .input_documents import InputDocuments
 from .model import Model
+from .node import Node
 from .prompt import Prompt
+from .prompt_group import PromptGroup
+from .provider import Provider
+from .provider_group import ProviderGroup
 from .required_document import RequiredDocument
 from .running import Running
 from .settings import Settings
@@ -27,7 +30,7 @@ __all__ = [
     "AIAgent",
     "AuthToken",
     "ChatAgent",
-    "Client",
+    "Provider",
     "CopyingAgent",
     "CriticAgent",
     "Document",
@@ -38,7 +41,11 @@ __all__ = [
     "HardCodeAgent",
     "InputDocuments",
     "Model",
+    "Node",
     "Prompt",
+    "PromptGroup",
+    "Provider",
+    "ProviderGroup",
     "RequiredDocument",
     "Running",
     "Settings",

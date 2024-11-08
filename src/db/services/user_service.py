@@ -10,7 +10,7 @@ from src.db.errors.user import (
     UserNotFoundError,
 )
 from src.db.services.auth_service import AuthService
-from src.models.group import GroupPermissionsModel, UserGroupModel
+from src.models.member import GroupPermissionsModel, UserGroupModel
 from src.models.user import (
     ChangePasswordRequestModel,
     ExpandedUserModel,
@@ -213,11 +213,10 @@ class UserService:
                 group_name=user_group.group.name,
                 permissions=GroupPermissionsModel(
                     owner=user_group.owner,
-                    add_users=user_group.add_users,
-                    edit_users_permissions=user_group.edit_users_permissions,
-                    delete_users=user_group.delete_users,
+                    change_members=user_group.change_members,
                     add_graphs=user_group.add_graphs,
-                    edit_graphs_permissions=user_group.edit_graphs_permissions,
+                    run_graphs=user_group.run_graphs,
+                    change_graphs_permissions=user_group.change_graphs_permissions,
                     delete_graphs=user_group.delete_graphs,
                 ),
             )
