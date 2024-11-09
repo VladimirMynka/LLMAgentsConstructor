@@ -29,9 +29,7 @@ class UserModel(BaseModel):
     login: str = Field(..., description="User login")
 
     class Config:
-        schema_extra = {
-            "example": {"id": 1, "login": "VladimirMynka"},
-        }
+        schema_extra = {"example": {"id": 1, "login": "VladimirMynka"}}
 
 
 class UsersModel(BaseModel):

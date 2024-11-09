@@ -6,10 +6,13 @@ from src.api.controllers.users import get_token
 from src.db.errors.group import GroupNotFoundError, UserNotInGroupError
 from src.db.errors.user import NotAuthorizedError
 from src.db.services import GroupService
-from src.db.services.group_provider_service import GroupProviderService
-from src.models.graph import GraphModel
-from src.models.group import CreateGroupRequestModel, ExpandGroupModel
-from src.models.provider import AddProviderToGroupRequestModel, ProviderModel
+from src.models.group import (
+    CreateGroupRequestModel,
+    DeleteGroupResponseModel,
+    ExpandGroupModel,
+    GroupModel,
+    UpdateGroupRequestModel,
+)
 from src.models.user import UserModel
 
 router = APIRouter(prefix="/groups")
@@ -34,7 +37,24 @@ def map_errors(func):
     return wrapper
 
 
-@router.post("/create")
+@router.get("/")
+@map_errors
+async def get_groups(
+    token: str = Depends(get_token),
+) -> list[GroupModel]:
+    """
+    Get all groups of current user.
+
+    Returns:
+        list[GroupModel] - List of group models
+
+    Raises:
+        HTTPException(401): If the user is not authorized
+    """
+    return GroupService.get_groups(token)
+
+
+@router.post("/")
 @map_errors
 async def create_group(
     body: CreateGroupRequestModel,
@@ -47,7 +67,7 @@ async def create_group(
         body: CreateGroupRequestModel - Group name
 
     Returns:
-        LoginResponseModel - User auth token
+        ExpandGroupModel - Expand group model
 
     Raises:
         HTTPException(401): If the user is not authorized
@@ -78,6 +98,54 @@ async def get_group_by_id(
     return GroupService.get_group_by_id(group_id, token)
 
 
+@router.patch("/{group_id}")
+@map_errors
+async def update_group(
+    group_id: int,
+    body: UpdateGroupRequestModel,
+    token: str = Depends(get_token),
+) -> ExpandGroupModel:
+    """
+    Update group.
+
+    Args:
+        group_id: int - Group id
+        body: UpdateGroupRequestModel - Group name
+
+    Returns:
+        ExpandGroupModel - Expand group model
+
+    Raises:
+        HTTPException(401): If the user is not authorized
+        HTTPException(403): If the user is not in the group or does not have permissions
+        HTTPException(404): If the group is not found
+    """
+    return GroupService.update_group(body, group_id, token)
+
+
+@router.delete("/{group_id}")
+@map_errors
+async def delete_group(
+    group_id: int,
+    token: str = Depends(get_token),
+) -> DeleteGroupResponseModel:
+    """
+    Delete group.
+
+    Args:
+        group_id: int - Group id
+
+    Returns:
+        DeleteGroupResponseModel - Delete group response model
+
+    Raises:
+        HTTPException(401): If the user is not authorized
+        HTTPException(403): If the user is not in the group or does not have permissions
+        HTTPException(404): If the group is not found
+    """
+    return GroupService.delete_group(group_id, token)
+
+
 @router.get("/{group_id}/owner")
 @map_errors
 async def get_group_owner(
@@ -99,51 +167,3 @@ async def get_group_owner(
         HTTPException(404): If the group is not found
     """
     return GroupService.get_owner(group_id, token)
-
-
-@router.get("/{group_id}/graphs")
-@map_errors
-async def get_graphs(
-    group_id: int,
-    token: str = Depends(get_token),
-) -> list[GraphModel]:
-    """
-    Get group graphs.
-
-    Args:
-        group_id: int - Group id
-
-    Returns:
-        list[GraphModel] - List of graphs
-
-    Raises:
-        HTTPException(401): If the requester is not authorized
-        HTTPException(403): If the requester is not in the group
-        HTTPException(404): If the group is not found
-    """
-    return GroupService.get_graphs(group_id, token)
-
-@router.post("/{group_id}/providers")
-@map_errors
-async def add_provider_to_group(
-    group_id: int,
-    body: AddProviderToGroupRequestModel,
-    token: str = Depends(get_token),
-) -> list[ProviderModel]:
-    """
-    Add provider to group.
-
-    Args:
-        group_id: int - Group id
-        body: AddProviderToGroupRequestModel - Add provider to group request model
-
-    Returns:
-        list[ProviderModel] - List of providers
-
-    Raises:
-        HTTPException(401): If the requester is not authorized
-        HTTPException(403): If the requester is not in the group
-        HTTPException(404): If the group is not found
-        HTTPException(404): If the provider is not found
-    """
-    return GroupProviderService.add_provider_to_group(group_id, body, token)

@@ -15,6 +15,7 @@
 
 ## Group
 - [X] `POST /api/groups/` - Create group
+- [X] `GET /api/groups/` - Get all groups of current user
 - [X] `GET /api/groups/{group_id}` - Get full group info
 - [X] `PATCH /api/groups/{group_id}` - Update group info
 - [X] `DELETE /api/groups/{group_id}` - Delete group
@@ -22,7 +23,7 @@
 
 ### Graphs
 - [X] `GET /api/groups/{group_id}/graphs` - Get group graphs
-- [ ] `POST /api/groups/{group_id}/graphs` - Add group graph
+- [X] `POST /api/groups/{group_id}/graphs` - Add group graph
 
 ### Providers
 - [X] `GET /api/groups/{group_id}/providers` - Get group providers
@@ -60,3 +61,10 @@
 - [X] `GET /api/prompts/{prompt_id}` - Get prompt info
 - [X] `DELETE /api/prompts/{prompt_id}` - Delete prompt
 - [X] `PUT /api/prompts/{prompt_id}` - Update prompt
+
+## Graphs
+- [X] `POST /api/graphs` - Add graph
+- [X] `GET /api/graphs` - Get all graphs
+- [X] `GET /api/graphs/{graph_id}` - Get graph info
+- [X] `DELETE /api/graphs/{graph_id}` - Delete graph
+- [X] `PUT /api/graphs/{graph_id}` - Update graph

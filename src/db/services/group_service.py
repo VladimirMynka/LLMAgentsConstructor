@@ -19,6 +19,31 @@ from src.models.user import UserModel
 
 
 class GroupService:
+    """
+    Group service.
+    """
+
+    @classmethod
+    def get_groups(
+        cls,
+        auth_token: str,
+    ) -> list[GroupModel]:
+        """
+        Get all groups of current user.
+
+        Args:
+            auth_token: str - Auth token
+
+        Returns:
+            list[GroupModel] - List of group models
+
+        Raises:
+            NotAuthorizedError: User not authorized
+        """
+        user = UserService.get_user_by_auth_token(auth_token)
+        return UserService.get_user_groups(user.id, auth_token)
+
+    @classmethod
     @use_repository
     def get_group_by_id(
         cls,
@@ -41,7 +66,7 @@ class GroupService:
             GroupNotFoundError: Group not found
             UserNotInGroupError: User is not in the group
         """
-        user: UserModel = UserService.get_user_by_auth_token(auth_token, repository)
+        user: UserModel = UserService.get_user_by_auth_token(auth_token)
 
         user_group = repository.get(UserGroup, user.id, group_id)
         if not user_group:
@@ -70,11 +95,11 @@ class GroupService:
             ),
         )
 
+    @classmethod
     def get_owner(
         cls,
         group_id: int,
         auth_token: str,
-        repository: Session,
     ) -> UserModel:
         """
         Get group owner.
@@ -91,28 +116,10 @@ class GroupService:
             GroupNotFoundError: Group not found
             UserNotInGroupError: User is not in the group
         """
-        group = cls.get_group_by_id(group_id, auth_token, repository)
+        group = cls.get_group_by_id(group_id, auth_token)
         return group.owner
 
-    def get_graphs(cls, group_id: int, auth_token: str) -> list[GraphModel]:
-        """
-        Get group graphs.
-
-        Args:
-            group_id: int - Group id
-            auth_token: str - Auth token
-
-        Returns:
-            list[GraphModel] - List of group graphs
-
-        Raises:
-            NotAuthorizedError: User not authorized
-            GroupNotFoundError: Group not found
-            UserNotInGroupError: User is not in the group
-        """
-        group = cls.get_group_by_id(group_id, auth_token)
-        return group.graphs
-
+    @classmethod
     @use_repository
     def create_group(
         cls,
@@ -158,6 +165,7 @@ class GroupService:
         repository.commit()
         return cls.get_group_by_id(group.id)
 
+    @classmethod
     @use_repository
     def update_group(
         cls,
@@ -198,6 +206,7 @@ class GroupService:
         repository.commit()
         return cls.get_group_by_id(group_id)
 
+    @classmethod
     @use_repository
     def delete_group(
         cls,
