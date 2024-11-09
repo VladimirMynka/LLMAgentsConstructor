@@ -10,9 +10,7 @@ class Graph(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("User.id"), nullable=False)
 
-    user: Mapped["User"] = relationship(back_populates="graphs")  # type: ignore
     agents: Mapped[list["Agent"]] = relationship(back_populates="graph")  # type: ignore
     groups: Mapped[list["GraphGroup"]] = relationship(back_populates="graph")  # type: ignore
 
