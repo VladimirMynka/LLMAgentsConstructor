@@ -12,7 +12,7 @@ class Model(Base):
     name: Mapped[str] = mapped_column(nullable=False)
 
     provider_id: Mapped[int] = mapped_column(ForeignKey("Provider.id"), nullable=False)
-    provider: Mapped["Provider"] = relationship("Provider")  # type: ignore
+    provider: Mapped["Provider"] = relationship("Provider", back_populates="models")  # type: ignore
 
     def __repr__(self):
         return f"""

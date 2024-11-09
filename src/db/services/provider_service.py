@@ -81,7 +81,7 @@ class ProviderService:
         """
         user_model = UserService.get_user_by_auth_token(auth_token)
 
-        cls._check_user_has_access_to_provider(user_model.id, provider_id)
+        cls.check_user_has_access_to_provider(user_model.id, provider_id)
 
         provider = repository.get(Provider, provider_id)
         if not provider:
@@ -176,7 +176,7 @@ class ProviderService:
         user: User = repository.get_one(User, User.id == user_model.id)
         base_group: Group = user.base_group
 
-        cls._check_user_has_access_to_provider(user_model.id, provider_id)
+        cls.check_user_has_access_to_provider(user_model.id, provider_id)
 
         provider = repository.get_one(Provider, provider_id)
         if not provider:
@@ -224,7 +224,7 @@ class ProviderService:
         user: User = repository.get_one(User, User.id == user_model.id)
         base_group: Group = user.base_group
 
-        cls._check_user_has_access_to_provider(user_model.id, provider_id)
+        cls.check_user_has_access_to_provider(user_model.id, provider_id)
 
         provider = repository.get_one(Provider, provider_id)
         if not provider:
@@ -268,7 +268,7 @@ class ProviderService:
 
     @classmethod
     @use_repository
-    def _check_user_has_access_to_provider(
+    def check_user_has_access_to_provider(
         cls,
         user_id: int,
         provider_id: int,
@@ -276,6 +276,14 @@ class ProviderService:
     ):
         """
         Check if the user has access to the provider.
+
+        Args:
+            user_id: int - User id
+            provider_id: int - Provider id
+
+        Raises:
+            UserNotFoundError: If the user is not found
+            ProviderNotFoundError: If the provider is not found or user has no access to it
         """
         user = repository.get_one(User, User.id == user_id)
         if not user:

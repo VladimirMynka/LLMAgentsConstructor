@@ -22,7 +22,7 @@
 
 ### Graphs
 - [X] `GET /api/groups/{group_id}/graphs` - Get group graphs
-- [] `POST /api/groups/{group_id}/graphs` - Add group graph
+- [ ] `POST /api/groups/{group_id}/graphs` - Add group graph
 
 ### Providers
 - [X] `GET /api/groups/{group_id}/providers` - Get group providers
@@ -46,6 +46,13 @@
 - [X] `GET /api/providers/{provider_id}` - Get provider info
 - [X] `PUT /api/providers/{provider_id}` - Update provider
 - [X] `DELETE /api/providers/{provider_id}` - Delete provider
+
+### Models
+- [X] `POST /api/providers/{provider_id}/models` - Add model to provider
+- [X] `GET /api/providers/{provider_id}/models` - Get all models of provider
+- [X] `GET /api/providers/{provider_id}/models/{model_id}` - Get model info
+- [X] `PUT /api/providers/{provider_id}/models/{model_id}` - Update model
+- [X] `DELETE /api/providers/{provider_id}/models/{model_id}` - Delete model from provider
 
 ## Prompts
 - [X] `POST /api/prompts` - Add prompt
