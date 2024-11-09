@@ -24,6 +24,10 @@ from src.models.user import (
 
 
 class UserService:
+    """
+    Group of methods for managing users.
+    """
+
     @use_repository
     @classmethod
     def patch_user(

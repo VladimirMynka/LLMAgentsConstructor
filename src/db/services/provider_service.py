@@ -4,6 +4,7 @@ from src.db.decorators import use_repository
 from src.db.entities.group import Group
 from src.db.entities.provider import Provider
 from src.db.entities.provider_group import ProviderGroup
+from src.db.entities.provider_token import ProviderToken
 from src.db.entities.user import User
 from src.db.entities.user_group import UserGroup
 from src.db.errors.provider import ProviderNotFoundError, UserIsNotProviderOwnerError
@@ -53,6 +54,13 @@ class ProviderService:
                 id=provider.id,
                 name=provider.name,
                 url=provider.url,
+                has_token=bool(
+                    repository.get_one(
+                        ProviderToken,
+                        ProviderToken.provider_id == provider.id,
+                        ProviderToken.user_id == user_model.id,
+                    )
+                ),
             )
             for provider in providers
         ]
@@ -91,6 +99,13 @@ class ProviderService:
             id=provider.id,
             name=provider.name,
             url=provider.url,
+            has_token=bool(
+                repository.get_one(
+                    ProviderToken,
+                    ProviderToken.provider_id == provider.id,
+                    ProviderToken.user_id == user_model.id,
+                )
+            ),
             groups=[
                 GroupModel(
                     id=provider_group.group_id,
@@ -107,7 +122,7 @@ class ProviderService:
         provider_model: CreateProviderRequestModel,
         auth_token: str,
         repository: Session,
-    ) -> ProviderModel:
+    ) -> list[ProviderModel]:
         """
         Create a new provider.
 
@@ -116,7 +131,7 @@ class ProviderService:
             auth_token: str - Authentication token
 
         Returns:
-            ProviderModel - Created provider
+            list[ProviderModel] - List of providers
 
         Raises:
             NotAuthorizedError: If the authentication token is invalid
@@ -141,11 +156,7 @@ class ProviderService:
         repository.commit()
         repository.refresh(provider)
 
-        return ProviderModel(
-            id=provider.id,
-            name=provider.name,
-            url=provider.url,
-        )
+        return cls.get_providers(auth_token, repository)
 
     @classmethod
     @use_repository
@@ -155,7 +166,7 @@ class ProviderService:
         provider_model: UpdateProviderRequestModel,
         auth_token: str,
         repository: Session,
-    ) -> Provider:
+    ) -> list[ProviderModel]:
         """
         Update provider by id.
 
@@ -165,7 +176,7 @@ class ProviderService:
             auth_token: str - Authentication token
 
         Returns:
-            Provider - Updated provider
+            list[ProviderModel] - List of providers
 
         Raises:
             NotAuthorizedError: If the authentication token is invalid
@@ -195,7 +206,7 @@ class ProviderService:
 
         repository.commit()
 
-        return provider
+        return cls.get_providers(auth_token, repository)
 
     @classmethod
     @use_repository

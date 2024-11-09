@@ -47,6 +47,7 @@
 - [X] `GET /api/providers/{provider_id}` - Get provider info
 - [X] `PUT /api/providers/{provider_id}` - Update provider
 - [X] `DELETE /api/providers/{provider_id}` - Delete provider
+- [X] `POST /api/providers/{provider_id}/test_connection` - Test connection to provider
 
 ### Models
 - [X] `POST /api/providers/{provider_id}/models` - Add model to provider
@@ -54,6 +55,11 @@
 - [X] `GET /api/providers/{provider_id}/models/{model_id}` - Get model info
 - [X] `PUT /api/providers/{provider_id}/models/{model_id}` - Update model
 - [X] `DELETE /api/providers/{provider_id}/models/{model_id}` - Delete model from provider
+
+### Provider tokens
+- [X] `PUT /api/providers/{provider_id}/tokens` - Add or update provider token
+- [X] `DELETE /api/providers/{provider_id}/tokens` - Delete provider token
+
 
 ## Prompts
 - [X] `POST /api/prompts` - Add prompt

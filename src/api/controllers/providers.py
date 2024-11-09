@@ -6,10 +6,12 @@ from src.api.controllers.users import get_token
 from src.db.errors.provider import ProviderNotFoundError, UserIsNotProviderOwnerError
 from src.db.errors.user import NotAuthorizedError
 from src.db.services.provider_service import ProviderService
+from src.db.services.provider_token_service import ProviderTokenService
 from src.models.provider import (
     CreateProviderRequestModel,
     ExpandProviderModel,
     ProviderModel,
+    TestConnectionResponseModel,
     UpdateProviderRequestModel,
 )
 
@@ -42,7 +44,7 @@ def map_errors(func):
 async def create_provider(
     body: CreateProviderRequestModel,
     token: str = Depends(get_token),
-) -> ProviderModel:
+) -> list[ProviderModel]:
     """
     Create a provider.
 
@@ -50,7 +52,7 @@ async def create_provider(
         body: CreateProviderRequestModel - Provider data
 
     Returns:
-        ProviderModel - Provider data
+        list[ProviderModel] - List of providers
 
     Raises:
         HTTPException(401): If the user is not authorized
@@ -80,7 +82,7 @@ async def get_providers(
 
 @router.get("/{provider_id}")
 @map_errors
-async def get_group_by_id(
+async def get_provider_by_id(
     provider_id: int,
     token: str = Depends(get_token),
 ) -> ExpandProviderModel:
@@ -106,7 +108,7 @@ async def update_provider(
     provider_id: int,
     body: UpdateProviderRequestModel,
     token: str = Depends(get_token),
-) -> ProviderModel:
+) -> list[ProviderModel]:
     """
     Update provider.
 
@@ -115,7 +117,7 @@ async def update_provider(
         body: UpdateProviderRequestModel - Provider data
 
     Returns:
-        ProviderModel - Provider data
+        list[ProviderModel] - List of providers
 
     Raises:
         HTTPException(401): If the user is not authorized
@@ -143,3 +145,25 @@ async def delete_provider(
         HTTPException(404): If the provider is not found or user has no access to it
     """
     return ProviderService.delete_provider(provider_id, token)
+
+
+@router.post("/{provider_id}/test_connection")
+@map_errors
+async def test_connection(
+    provider_id: int,
+    token: str = Depends(get_token),
+) -> TestConnectionResponseModel:
+    """
+    Test connection to provider.
+
+    Args:
+        provider_id: int - Provider id
+
+    Returns:
+        TestConnectionResponseModel - Test connection response
+
+    Raises:
+        HTTPException(401): If the user is not authorized
+        HTTPException(404): If the provider is not found or user has no access to it
+    """
+    return ProviderTokenService.test_connection(provider_id, token)

@@ -4,6 +4,7 @@ from src.db.decorators import use_repository
 from src.db.entities.group import Group
 from src.db.entities.provider import Provider
 from src.db.entities.provider_group import ProviderGroup
+from src.db.entities.provider_token import ProviderToken
 from src.db.errors.group import GroupNotFoundError, UserNotInGroupError
 from src.db.errors.provider import ProviderAlreadyInGroupError, ProviderNotFoundError
 from src.db.services.member_service import MemberService
@@ -55,6 +56,13 @@ class GroupProviderService:
                 id=provider.id,
                 name=provider.name,
                 url=provider.url,
+                has_token=bool(
+                    repository.get_one(
+                        ProviderToken,
+                        ProviderToken.provider_id == provider.id,
+                        ProviderToken.user_id == user_model.id,
+                    )
+                ),
             )
             for provider in providers
         ]

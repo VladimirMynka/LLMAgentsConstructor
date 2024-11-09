@@ -23,7 +23,7 @@ from .settings import Settings
 from .stopwords import Stopword
 from .user import User
 from .user_group import UserGroup
-from .user_token import UserToken
+from .provider_token import UserToken
 
 __all__ = [
     "Agent",

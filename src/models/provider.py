@@ -11,6 +11,7 @@ class ProviderModel(BaseModel):
     id: int
     name: str
     url: str
+    has_token: bool
 
     class Config:
         schema_extra = {
@@ -18,6 +19,7 @@ class ProviderModel(BaseModel):
                 "id": 1,
                 "name": "OpenAI",
                 "url": "https://api.openai.com",
+                "has_token": False,
             }
         }
 
@@ -35,6 +37,7 @@ class ExpandProviderModel(ProviderModel):
                 "id": 1,
                 "name": "OpenAI",
                 "url": "https://api.openai.com",
+                "has_token": False,
                 "groups": [GroupModel.Config.schema_extra["example"]],
             }
         }
@@ -87,3 +90,12 @@ class AddProviderToGroupRequestModel(BaseModel):
                 "provider_id": 1,
             }
         }
+
+
+class TestConnectionResponseModel(BaseModel):
+    """
+    Test connection response model.
+    """
+
+    ok: bool
+    message: str
