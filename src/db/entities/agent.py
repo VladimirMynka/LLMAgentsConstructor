@@ -1,6 +1,6 @@
 from enum import Enum
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.database import Base
@@ -42,6 +42,8 @@ class Agent(Base):
         "polymorphic_identity": "agent",
         "polymorphic_on": "agent_type",
     }
+
+    __table_args__ = (UniqueConstraint("node_id", name="uix_agent_node_id"),)
 
     def __repr__(self):
         return f"""

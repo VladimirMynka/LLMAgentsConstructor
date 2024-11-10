@@ -3,6 +3,7 @@ from dataclasses import Field
 from pydantic import BaseModel
 
 from src.models.group import GroupModel
+from src.models.node import ExtendedNodeModel
 
 
 class GraphModel(BaseModel):
@@ -30,6 +31,7 @@ class ExpandGraphModel(GraphModel):
     """
 
     groups: list[GroupModel]
+    nodes: list[ExtendedNodeModel]
 
     class Config:
         schema_extra = {
@@ -38,6 +40,7 @@ class ExpandGraphModel(GraphModel):
                 "name": "TheBestGraph",
                 "description": "The best graph",
                 "groups": [GroupModel.Config.schema_extra["example"]],
+                "nodes": [ExtendedNodeModel.Config.schema_extra["example"]],
             }
         }
 

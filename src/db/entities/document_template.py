@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.database import Base
@@ -17,6 +17,10 @@ class DocumentTemplate(Base):
 
     agent_id: Mapped[int] = mapped_column(ForeignKey("Agent.id"), nullable=False)
     agent: Mapped["Agent"] = relationship("Agent", back_populates="output_documents")  # type: ignore
+
+    __table_args__ = (
+        UniqueConstraint("node_id", name="uix_document_template_node_id"),
+    )
 
     def __repr__(self):
         return f"""DocumentTemplate(

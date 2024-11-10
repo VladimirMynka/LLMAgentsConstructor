@@ -14,6 +14,10 @@ class Node(Base):
     y: Mapped[int] = mapped_column(nullable=False)
 
     graph: Mapped["Graph"] = relationship("Graph", back_populates="nodes")  # type: ignore
+    agent: Mapped["Agent" | None] = relationship("Agent", back_populates="node")  # type: ignore
+    document_template: Mapped["DocumentTemplate" | None] = relationship(  # type: ignore
+        "DocumentTemplate", back_populates="node"
+    )
 
     def __repr__(self):
         return f"Node(id={self.id}, x={self.x}, y={self.y})"

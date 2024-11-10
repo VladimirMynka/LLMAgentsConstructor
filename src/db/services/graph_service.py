@@ -79,7 +79,7 @@ class GraphService:
         """
         user_model = UserService.get_user_by_auth_token(auth_token)
 
-        cls._check_user_has_access_to_graph(user_model.id, graph_id)
+        cls.check_user_has_access_to_graph(user_model.id, graph_id)
 
         graph = repository.get(Graph, graph_id)
         if not graph:
@@ -174,7 +174,7 @@ class GraphService:
         user: User = repository.get_one(User, User.id == user_model.id)
         base_group: Group = user.base_group
 
-        cls._check_user_has_access_to_graph(user_model.id, graph_id)
+        cls.check_user_has_access_to_graph(user_model.id, graph_id)
 
         graph = repository.get_one(Graph, graph_id)
         if not graph:
@@ -222,7 +222,7 @@ class GraphService:
         user: User = repository.get_one(User, User.id == user_model.id)
         base_group: Group = user.base_group
 
-        cls._check_user_has_access_to_graph(user_model.id, graph_id)
+        cls.check_user_has_access_to_graph(user_model.id, graph_id)
 
         graph = repository.get_one(Graph, graph_id)
         if not graph:
@@ -266,7 +266,7 @@ class GraphService:
 
     @classmethod
     @use_repository
-    def _check_user_has_access_to_graph(
+    def check_user_has_access_to_graph(
         cls,
         user_id: int,
         graph_id: int,
@@ -274,6 +274,16 @@ class GraphService:
     ):
         """
         Check if the user has access to the graph.
+
+        Args:
+            user_id: int - User id
+            graph_id: int - Graph id
+            repository: Session - Database session
+
+        Raises:
+            UserNotFoundError: If the user is not found
+            GraphNotFoundError: If the graph is not found
+            GraphNotFoundError: If the user has no access to the graph
         """
         user = repository.get_one(User, User.id == user_id)
         if not user:
