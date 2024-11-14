@@ -18,7 +18,7 @@ class Agent(Base):
     __tablename__ = "Agent"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    agent_type: Mapped[str] = mapped_column(nullable=False)
+    agent_type: Mapped[AgentType] = mapped_column(nullable=False)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
     start_log_message: Mapped[str] = mapped_column(nullable=True)

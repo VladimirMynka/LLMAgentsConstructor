@@ -13,6 +13,9 @@ group_router.include_router(group_providers_router)
 group_router.include_router(group_prompts_router)
 group_router.include_router(members_router)
 
+graphs_router.include_router(nodes_router)
+graphs_router.include_router(settings_router)
+
 main_router.include_router(user_router)
 main_router.include_router(group_router)
 main_router.include_router(graphs_router)

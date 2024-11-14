@@ -159,3 +159,20 @@ class ProviderTokenService:
             message="Connection to provider is successful. Available models: "
             + ", ".join([model.id for model in available_models]),
         )
+
+    @classmethod
+    @use_repository
+    def has_token(
+        cls,
+        user_id: int,
+        provider_id: int,
+        repository: Session,
+    ) -> bool:
+        return (
+            repository.get_one(
+                ProviderToken,
+                ProviderToken.user_id == user_id,
+                ProviderToken.provider_id == provider_id,
+            )
+            is not None
+        )

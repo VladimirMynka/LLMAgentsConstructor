@@ -290,3 +290,14 @@ class PromptService:
 
         if prompt not in sum([group.prompts for group in groups], []):
             raise PromptNotFoundError("User has no access to this prompt")
+
+    @staticmethod
+    def get_prompt_model(prompt: Prompt) -> PromptModel:
+        """
+        Get prompt model.
+        """
+        return PromptModel(
+            id=prompt.id,
+            name=prompt.name,
+            text=prompt.text,
+        )

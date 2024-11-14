@@ -85,6 +85,10 @@
 - [ ] `PUT /api/graphs/{graph_id}/agents/{agent_id}` - Update agent
 
 ### Nodes
-- [ ] `GET /api/graphs/{graph_id}/nodes` - Get all nodes of graph
-- [ ] `GET /api/graphs/{graph_id}/nodes/{node_id}` - Get node info
-- [ ] `PUT /api/graphs/{graph_id}/nodes/{node_id}` - Update node coordinates
+- [X] `GET /api/graphs/{graph_id}/nodes` - Get all nodes of graph
+- [X] `GET /api/graphs/{graph_id}/nodes/{node_id}` - Get node info
+- [X] `PUT /api/graphs/{graph_id}/nodes/{node_id}` - Update node coordinates
+
+
+### Settings
+- [X] `GET /api/graphs/{graph_id}/available_settings` - Get all available settings in current context

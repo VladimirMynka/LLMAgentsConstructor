@@ -5,8 +5,10 @@ from .group_providers import router as group_providers_router
 from .groups import router as group_router
 from .members import router as members_router
 from .models import router as models_router
+from .nodes import router as nodes_router
 from .prompts import router as prompts_router
 from .providers import router as providers_router
+from .settings import router as settings_router
 from .users import router as user_router
 
 __all__ = [
@@ -20,4 +22,6 @@ __all__ = [
     "prompts_router",
     "graphs_router",
     "models_router",
+    "nodes_router",
+    "settings_router",
 ]

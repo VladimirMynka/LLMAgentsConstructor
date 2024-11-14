@@ -5,6 +5,7 @@ from src.db.entities.model import Model
 from src.db.entities.provider import Provider
 from src.db.errors.model import ModelAlreadyExistsError, ModelNotFoundError
 from src.db.services.provider_service import ProviderService
+from src.db.services.provider_token_service import ProviderTokenService
 from src.db.services.user_service import UserService
 from src.models.model import (
     CreateModelRequestModel,
@@ -100,6 +101,10 @@ class ModelService:
                 id=model.provider.id,
                 name=model.provider.name,
                 url=model.provider.url,
+                has_token=ProviderTokenService.has_token(
+                    user_model.id,
+                    model.provider_id,
+                ),
             ),
         )
 
@@ -247,3 +252,29 @@ class ModelService:
         repository.commit()
 
         return cls.get_models(provider_id, auth_token)
+
+    def get_expand_model(model: Model, user_id: int) -> ExpandModelModel:
+        """
+        Get expand model.
+
+        Args:
+            model: Model - Model
+            user_id: int - User id
+
+        Returns:
+            ExpandModelModel - Expand model
+        """
+        return ExpandModelModel(
+            id=model.id,
+            name=model.name,
+            owner=model.owner,
+            provider=ProviderModel(
+                id=model.provider_id,
+                name=model.provider.name,
+                url=model.provider.url,
+                has_token=ProviderTokenService.has_token(
+                    user_id,
+                    model.provider_id,
+                ),
+            ),
+        )
