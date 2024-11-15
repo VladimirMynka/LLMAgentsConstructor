@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from src.db.database import Base
 
 
-class PredefinedType(Enum):
+class PredefinedType(Enum, str):
     replace_text = "replace_text"
 
 

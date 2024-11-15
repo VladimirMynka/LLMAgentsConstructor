@@ -21,8 +21,8 @@ class Agent(Base):
     agent_type: Mapped[AgentType] = mapped_column(nullable=False)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
-    start_log_message: Mapped[str] = mapped_column(nullable=True)
-    finish_log_message: Mapped[str] = mapped_column(nullable=True)
+    start_log_message: Mapped[str] = mapped_column(nullable=False)
+    finish_log_message: Mapped[str] = mapped_column(nullable=False)
 
     node_id: Mapped[int] = mapped_column(ForeignKey("Node.id"), nullable=False)
 

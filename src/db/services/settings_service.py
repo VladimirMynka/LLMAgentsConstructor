@@ -7,8 +7,11 @@ from src.db.entities.model import Model
 from src.db.entities.provider import Provider
 from src.db.entities.settings import Settings
 from src.db.errors.graph import GraphNotFoundError
+from src.db.errors.settings import SettingsNotFoundError
+from src.db.errors.user import NotAuthorizedError
 from src.db.services.graph_service import GraphService
 from src.db.services.model_service import ModelService
+from src.db.services.provider_service import ProviderService
 from src.db.services.user_service import UserService
 from src.models.settings import CreateSettingsModel, SettingsModel
 
@@ -153,3 +156,24 @@ class SettingsService:
             frequency_penalty=setting.frequency_penalty,
             presence_penalty=setting.presence_penalty,
         )
+
+    @classmethod
+    @use_repository
+    def check_user_has_access_to_settings(
+        cls,
+        user_id: int,
+        settings_id: int,
+        repository: Session,
+    ) -> Settings:
+        """Check if the user has access to the settings."""
+        settings = repository.get_one(Settings, Settings.id == settings_id)
+        if settings is None:
+            raise SettingsNotFoundError("Settings not found")
+
+        ProviderService.check_user_has_access_to_provider(
+            user_id,
+            settings.model.provider_id,
+            repository,
+        )
+
+        return settings

@@ -79,7 +79,7 @@ class PromptService:
         """
         user_model = UserService.get_user_by_auth_token(auth_token)
 
-        cls._check_user_has_access_to_prompt(user_model.id, prompt_id)
+        cls.check_user_has_access_to_prompt(user_model.id, prompt_id)
 
         prompt = repository.get(Prompt, prompt_id)
         if not prompt:
@@ -174,7 +174,7 @@ class PromptService:
         user: User = repository.get_one(User, User.id == user_model.id)
         base_group: Group = user.base_group
 
-        cls._check_user_has_access_to_prompt(user_model.id, prompt_id)
+        cls.check_user_has_access_to_prompt(user_model.id, prompt_id)
 
         prompt = repository.get_one(Prompt, prompt_id)
         if not prompt:
@@ -222,7 +222,7 @@ class PromptService:
         user: User = repository.get_one(User, User.id == user_model.id)
         base_group: Group = user.base_group
 
-        cls._check_user_has_access_to_prompt(user_model.id, prompt_id)
+        cls.check_user_has_access_to_prompt(user_model.id, prompt_id)
 
         prompt = repository.get_one(Prompt, prompt_id)
         if not prompt:
@@ -266,14 +266,23 @@ class PromptService:
 
     @classmethod
     @use_repository
-    def _check_user_has_access_to_prompt(
+    def check_user_has_access_to_prompt(
         cls,
         user_id: int,
         prompt_id: int,
         repository: Session,
-    ):
+    ) -> Prompt:
         """
         Check if the user has access to the prompt.
+
+        Args:
+            user_id: int - User id
+            prompt_id: int - Prompt id
+            repository: Session - Database session
+
+        Raises:
+            UserNotFoundError: If user not found
+            PromptNotFoundError: If prompt not found
         """
         user = repository.get_one(User, User.id == user_id)
         if not user:
@@ -291,6 +300,8 @@ class PromptService:
         if prompt not in sum([group.prompts for group in groups], []):
             raise PromptNotFoundError("User has no access to this prompt")
 
+        return prompt
+
     @staticmethod
     def get_prompt_model(prompt: Prompt) -> PromptModel:
         """
@@ -300,4 +311,12 @@ class PromptService:
             id=prompt.id,
             name=prompt.name,
             text=prompt.text,
+        )
+
+    @staticmethod
+    def create_prompt_without_commit(prompt_model: CreatePromptRequestModel) -> Prompt:
+        """Create prompt entity without committing."""
+        return Prompt(
+            name=prompt_model.name,
+            text=prompt_model.text,
         )

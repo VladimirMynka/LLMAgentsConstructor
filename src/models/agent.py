@@ -1,9 +1,12 @@
 from pydantic import BaseModel
 
 from src.db.entities.agent import AgentType
-from src.db.entities.hard_code_agent import PredefinedType
-from src.models.prompt import PromptModel
-from src.models.settings import SettingsModel
+from src.models.agent_details import (
+    AgentDetails,
+    CreateUpdateAgentDetails,
+    CriticDetails,
+)
+from src.models.node import CreateNodeRequestModel, NodeModel
 
 
 class AgentModel(BaseModel):
@@ -27,78 +30,15 @@ class AgentModel(BaseModel):
         }
 
 
-class AIDetails(BaseModel):
-    """
-    AI agent details.
-    """
-
-    prompt: PromptModel
-    settings: SettingsModel
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "prompt": PromptModel.Config.schema_extra["example"],
-                "settings": SettingsModel.Config.schema_extra["example"],
-            }
-        }
-
-
-class ChatDetails(AIDetails):
-    """
-    Chat agent details.
-    """
-
-    stopwords: list[str]
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "prompt": PromptModel.Config.schema_extra["example"],
-                "settings": SettingsModel.Config.schema_extra["example"],
-                "stopwords": ["stopword1", "stopword2"],
-            }
-        }
-
-
-class CriticDetails(AIDetails):
-    """
-    Critic agent details.
-    """
-
-    criticized_id: int
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "prompt": PromptModel.Config.schema_extra["example"],
-                "settings": SettingsModel.Config.schema_extra["example"],
-                "criticized_id": 1,
-            }
-        }
-
-
-class HardCodeDetails(BaseModel):
-    """
-    Hard-coded agent details.
-    """
-
-    predefined_type: PredefinedType
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "predefined_type": PredefinedType.replace_text,
-            }
-        }
-
-
 class ExtendedAgentModel(AgentModel):
     """
     Extended agent model.
     """
 
-    details: AIDetails | ChatDetails | CriticDetails | HardCodeDetails
+    start_log_message: str
+    finish_log_message: str
+    details: AgentDetails
+    node: NodeModel
 
     class Config:
         schema_extra = {
@@ -107,6 +47,23 @@ class ExtendedAgentModel(AgentModel):
                 "name": "Agent1",
                 "agent_type": AgentType.critic,
                 "description": "Agent1 description",
+                "start_log_message": "Agent1 start log message",
+                "finish_log_message": "Agent1 finish log message",
                 "details": CriticDetails.Config.schema_extra["example"],
+                "node": NodeModel.Config.schema_extra["example"],
             }
         }
+
+
+class CreateUpdateAgentModel(BaseModel):
+    """
+    Create or update agent model.
+    """
+
+    name: str
+    description: str
+    agent_type: AgentType
+    start_log_message: str
+    finish_log_message: str
+    details: CreateUpdateAgentDetails
+    node: CreateNodeRequestModel
