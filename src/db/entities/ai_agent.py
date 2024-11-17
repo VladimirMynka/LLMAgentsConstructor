@@ -9,11 +9,9 @@ class AIAgent(Agent):
 
     id: Mapped[int] = mapped_column(ForeignKey("Agent.id"), primary_key=True)
     prompt_id: Mapped[int] = mapped_column(ForeignKey("Prompt.id"), nullable=False)
-    client_id: Mapped[int] = mapped_column(ForeignKey("Client.id"), nullable=False)
     settings_id: Mapped[int] = mapped_column(ForeignKey("Settings.id"), nullable=False)
 
     prompt: Mapped["Prompt"] = relationship("Prompt", back_populates="ai_agents")  # type: ignore
-    client: Mapped["Client"] = relationship("Client", back_populates="ai_agents")  # type: ignore
     settings: Mapped["Settings"] = relationship("Settings", back_populates="ai_agents")  # type: ignore
 
     __mapper_args__ = {
@@ -24,7 +22,7 @@ class AIAgent(Agent):
         return f"""
 AIAgent(
     id={self.id},
-    prompt={self.prompt},
-    client_id={self.client_id}
+    prompt_id={self.prompt_id},
+    settings_id={self.settings_id}
 )
 """

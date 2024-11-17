@@ -1,6 +1,6 @@
 # LLM Agent Constructor
 
-<details>
+<details open>
 <summary>Table of Contents</summary>
 <blockquote>
 
@@ -18,7 +18,7 @@
 </blockquote>
 </details>
 
-<details>
+<details open>
 <summary>Installation</summary>
 <blockquote>
 
@@ -45,20 +45,20 @@ To install the project:
 </details>
 
 
-<details>
+<details open>
 <summary>Usage</summary>
 <blockquote>
 
 ## Usage
 
-<details>
+<details open>
 <summary>Predefined agents</summary>
 <blockquote>
 
 ### Predefined agents
 
 
-<details>
+<details open>
 <summary>System analyst</summary>
 <blockquote>
 
@@ -87,7 +87,7 @@ Full system analyst process can be explained in the following diagram:
 </blockquote>
 </details>
 
-<details>
+<details open>
 <summary>Custom agents creation</summary>
 <blockquote>
 
@@ -107,7 +107,7 @@ Then just go to the main function in `src/run.py` and add replace currently usin
 </details>
 
 
-<details>
+<details open>
 <summary>Further works</summary>
 <blockquote>
 

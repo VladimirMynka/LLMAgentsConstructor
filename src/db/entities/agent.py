@@ -1,10 +1,9 @@
 from enum import Enum
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.database import Base
-from src.db.entities.graph import Graph
 
 
 class AgentType(Enum):
@@ -19,14 +18,15 @@ class Agent(Base):
     __tablename__ = "Agent"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    agent_type: Mapped[str] = mapped_column(nullable=False)
+    agent_type: Mapped[AgentType] = mapped_column(nullable=False)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
-    start_log_message: Mapped[str] = mapped_column(nullable=True)
-    finish_log_message: Mapped[str] = mapped_column(nullable=True)
+    start_log_message: Mapped[str] = mapped_column(nullable=False)
+    finish_log_message: Mapped[str] = mapped_column(nullable=False)
 
-    graph_id: Mapped[int] = mapped_column(ForeignKey("Graph.id"), nullable=False)
-    graph: Mapped["Graph"] = relationship("Graph", back_populates="agents")  # type: ignore
+    node_id: Mapped[int] = mapped_column(ForeignKey("Node.id"), nullable=False)
+
+    node: Mapped["Node"] = relationship("Node")  # type: ignore
 
     output_documents: Mapped[list["DocumentTemplate"]] = relationship(  # type: ignore
         "DocumentTemplate", back_populates="agent"
@@ -42,6 +42,8 @@ class Agent(Base):
         "polymorphic_identity": "agent",
         "polymorphic_on": "agent_type",
     }
+
+    __table_args__ = (UniqueConstraint("node_id", name="uix_agent_node_id"),)
 
     def __repr__(self):
         return f"""
