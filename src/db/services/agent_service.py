@@ -1,31 +1,26 @@
-from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from src.db.decorators import use_repository
 from src.db.entities.agent import Agent, AgentType
-from src.db.entities.ai_agent import AIAgent
-from src.db.entities.chat_agent import ChatAgent
-from src.db.entities.critic_agent import CriticAgent
-from src.db.entities.hard_code_agent import HardCodeAgent
 from src.db.entities.node import Node
-from src.db.entities.prompt import Prompt
-from src.db.entities.settings import Settings
-from src.db.errors.agent import AgentNotFoundError, CriticizedAgentNotFoundError
+from src.db.errors.agent import AgentNotFoundError, InvalidAgentTypeError
+from src.db.services.agents.ai_agent_service import AIAgentService
+from src.db.services.agents.chat_agent_service import ChatAgentService
+from src.db.services.agents.critic_agent_service import CriticAgentService
+from src.db.services.agents.hard_code_agent_service import HardCodeAgentService
+from src.db.services.agents.interfaces import ISpecificAgentService
 from src.db.services.graph_service import GraphService
-from src.db.services.prompt_service import PromptService
-from src.db.services.settings_service import SettingsService
 from src.db.services.user_service import UserService
-from src.models.agent import (
-    AIDetails,
-    ChatDetails,
-    CreateUpdateAgentModel,
-    CriticDetails,
-    ExtendedAgentModel,
-    HardCodeDetails,
-)
+from src.models.agent import CreateUpdateAgentModel, ExtendedAgentModel
+from src.models.agent_details import AgentDetails
 from src.models.node import ContentType, NodeModel
-from src.models.prompt import PromptModel
-from src.models.settings import SettingsModel
+
+MAPPER: dict[AgentType, ISpecificAgentService] = {
+    AgentType.ai: AIAgentService,
+    AgentType.chat: ChatAgentService,
+    AgentType.critic: CriticAgentService,
+    AgentType.hard_code: HardCodeAgentService,
+}
 
 
 class AgentService:
@@ -116,9 +111,9 @@ class AgentService:
     def create_agent(
         cls,
         graph_id: int,
-        agent_type: str,
-        auth_token: str,
+        agent_type: AgentType,
         data: CreateUpdateAgentModel,
+        auth_token: str,
         repository: Session,
     ) -> list[ExtendedAgentModel]:
         """
@@ -150,8 +145,88 @@ class AgentService:
 
         agent = cls._create_specific_agent(data, node.id, agent_type)
         repository.add(agent)
+        repository.commit()
 
-        return cls.get_agent(agent.id, graph_id, auth_token, repository)
+        return cls.get_agents(graph_id, auth_token, repository)
+
+    @classmethod
+    @use_repository
+    def update_agent(
+        cls,
+        graph_id: int,
+        agent_id: int,
+        data: CreateUpdateAgentModel,
+        auth_token: str,
+        repository: Session,
+    ) -> ExtendedAgentModel:
+        """
+        Update agent.
+
+        Args:
+            graph_id: int - Graph id
+            agent_id: int - Agent id
+            data: CreateUpdateAgentModel - Data
+            auth_token: str - Authentication token
+            repository: Session - Database session
+
+        Returns:
+            ExtendedAgentModel - Agent
+
+        Raises:
+            NotAuthorizedError: If the authentication token is invalid
+            GraphNotFoundError: If the graph is not found or user has no access to it
+            AgentNotFoundError: If the agent is not found
+        """
+        user_model = UserService.get_user_by_auth_token(auth_token, repository)
+        GraphService.check_user_has_access_to_graph(user_model.id, graph_id)
+
+        agent = repository.get_one(Agent, Agent.id == agent_id)
+        if not agent:
+            raise AgentNotFoundError("Agent not found")
+
+        cls._update_specific_agent(agent, data, repository)
+        repository.commit()
+
+        return cls.get_agents(graph_id, auth_token, repository)
+
+    @classmethod
+    @use_repository
+    def delete_agent(
+        cls,
+        agent_id: int,
+        graph_id: int,
+        auth_token: str,
+        repository: Session,
+    ) -> list[ExtendedAgentModel]:
+        """
+        Delete agent.
+
+        Args:
+            agent_id: int - Agent id
+            graph_id: int - Graph id
+            auth_token: str - Auth token
+            repository: Session - Database session
+
+        Returns:
+            list[ExtendedAgentModel] - List of agents
+
+        Raises:
+            NotAuthorizedError: If the authentication token is invalid
+            GraphNotFoundError: If the graph is not found or user has no access to it
+            AgentNotFoundError: If the agent is not found
+        """
+        user_model = UserService.get_user_by_auth_token(auth_token, repository)
+        GraphService.check_user_has_access_to_graph(user_model.id, graph_id)
+
+        agent = repository.get_one(Agent, Agent.id == agent_id)
+        if not agent:
+            raise AgentNotFoundError("Agent not found")
+
+        MAPPER[agent.agent_type].delete_agent(agent_id, repository)
+        repository.delete(agent)
+        repository.commit()
+
+        return cls.get_agents(graph_id, auth_token, repository)
 
     @classmethod
     def _make_agent_model(
@@ -185,7 +260,7 @@ class AgentService:
         agent: Agent,
         user_id: int,
         repository: Session,
-    ) -> AIDetails | HardCodeDetails:
+    ) -> AgentDetails:
         """
         Get agent details.
 
@@ -195,97 +270,15 @@ class AgentService:
             repository: Session - Database session
 
         Returns:
-            AIDetails | HardCodedDetails - Agent details
+            AgentDetails - Agent details
 
         Raises:
-            ValidationError: If the agent type is invalid
+            InvalidAgentTypeError: If the agent type is invalid
         """
-        if agent.agent_type in [
-            AgentType.ai,
-            AgentType.chat,
-            AgentType.critic,
-        ]:
-            return cls._get_ai_agent_details(agent, user_id, repository)
+        if agent.agent_type not in MAPPER:
+            raise InvalidAgentTypeError("Invalid agent type")
 
-        elif agent.agent_type in [
-            AgentType.hard_code,
-        ]:
-            return cls._get_hard_code_agent_details(agent, repository)
-
-        raise ValidationError("Invalid agent type")
-
-    @classmethod
-    def _get_ai_agent_details(
-        cls,
-        agent: Agent,
-        user_id: int,
-        repository: Session,
-    ) -> AIDetails:
-        """
-        Get AI agent details.
-        """
-        ai_agent = repository.get_one(AIAgent, AIAgent.id == agent.id)
-        prompt = PromptService.get_prompt_model(ai_agent.prompt)
-        settings = SettingsService.get_settings_model(ai_agent.settings, user_id)
-
-        if agent.agent_type == AgentType.chat:
-            return cls._get_chat_agent_details(agent, prompt, settings, repository)
-
-        elif agent.agent_type == AgentType.critic:
-            return cls._get_critic_agent_details(agent, prompt, settings, repository)
-
-        return AIDetails(prompt=prompt, settings=settings)
-
-    @classmethod
-    def _get_hard_code_agent_details(
-        cls,
-        agent: Agent,
-        repository: Session,
-    ) -> HardCodeDetails:
-        """
-        Get hard code agent details.
-        """
-        hard_coded_agent = repository.get_one(
-            HardCodeAgent, HardCodeAgent.id == agent.id
-        )
-        return HardCodeDetails(predefined_code=hard_coded_agent.predefined_code)
-
-    @classmethod
-    def _get_chat_agent_details(
-        cls,
-        agent: AIAgent,
-        prompt: PromptModel,
-        settings: SettingsModel,
-        repository: Session,
-    ) -> ChatDetails:
-        """
-        Get chat agent details.
-        """
-        chat_agent = repository.get_one(ChatAgent, ChatAgent.id == agent.id)
-        stopwords = chat_agent.stopwords
-        return ChatDetails(
-            prompt=prompt,
-            settings=settings,
-            stopwords=stopwords,
-        )
-
-    @classmethod
-    def _get_critic_agent_details(
-        cls,
-        agent: AIAgent,
-        prompt: PromptModel,
-        settings: SettingsModel,
-        repository: Session,
-    ) -> CriticDetails:
-        """
-        Get critic agent details.
-        """
-        critic_agent = repository.get_one(CriticAgent, CriticAgent.id == agent.id)
-        return CriticDetails(
-            prompt=prompt,
-            settings=settings,
-            criticized_id=critic_agent.criticized_id,
-        )
+        return MAPPER[agent.agent_type].get_details(agent, user_id, repository)
 
     @classmethod
     def _create_specific_agent(
@@ -297,64 +290,49 @@ class AgentService:
     ) -> Agent:
         """
         Create specific agent.
+
+        Args:
+            data: CreateUpdateAgentModel - Data
+            user_id: int - User id
+            node_id: int - Node id
+            repository: Session - Database session
+
+        Returns:
+            Agent - Agent
+
+        Raises:
+            InvalidAgentTypeError: If the agent type is invalid
         """
-        details = data.details
+        if data.agent_type not in MAPPER:
+            raise InvalidAgentTypeError("Invalid agent type")
 
-        if data.agent_type in [AgentType.ai, AgentType.chat, AgentType.critic]:
-            prompt = repository.get_one(Prompt, Prompt.id == details.prompt_id)
-            if details.settings_id is not None:
-                settings = repository.get_one(
-                    Settings, Settings.id == details.settings_id
-                )
-                if (settings is None) or settings:
-                    raise SettingsNotFoundError("Settings not found")
+        return MAPPER[data.agent_type].make_entity(data, user_id, node_id, repository)
 
-        if data.agent_type == AgentType.ai:
-            return AIAgent(
-                name=data.name,
-                description=data.description,
-                start_log_message=data.start_log_message,
-                finish_log_message=data.finish_log_message,
-                agent_type=data.agent_type,
-                prompt=prompt,
-                settings=settings,
-                node_id=node_id,
-            )
+    @classmethod
+    def _update_specific_agent(
+        cls,
+        agent: Agent,
+        user_id: int,
+        data: CreateUpdateAgentModel,
+        repository: Session,
+    ) -> Agent:
+        """
+        Update specific agent.
 
-        elif data.agent_type == AgentType.chat:
-            return ChatAgent(
-                name=data.name,
-                description=data.description,
-                start_log_message=data.start_log_message,
-                finish_log_message=data.finish_log_message,
-                agent_type=data.agent_type,
-                node_id=node_id,
-            )
+        Args:
+            agent: Agent - Agent
+            user_id: int - User id
+            data: CreateUpdateAgentModel - Data
+            repository: Session - Database session
 
-        elif data.agent_type == AgentType.critic:
-            criticized = repository.get_one(
-                Agent, Agent.id == data.details.criticized_id
-            )
-            if not criticized:
-                raise CriticizedAgentNotFoundError("Criticized agent not found")
+        Returns:
+            Agent - Agent entity
 
-            return CriticAgent(
-                name=data.name,
-                description=data.description,
-                start_log_message=data.start_log_message,
-                finish_log_message=data.finish_log_message,
-                agent_type=data.agent_type,
-                criticized=criticized,
-                node_id=node_id,
-            )
+        Raises:
+            InvalidAgentTypeError: If the agent type is invalid
+            AgentNotFoundError: If agent not found
+        """
+        if agent.agent_type not in MAPPER:
+            raise InvalidAgentTypeError("Invalid agent type")
 
-        elif data.agent_type == AgentType.hard_code:
-            return HardCodeAgent(
-                name=data.name,
-                description=data.description,
-                start_log_message=data.start_log_message,
-                finish_log_message=data.finish_log_message,
-                agent_type=data.agent_type,
-                predefined_type=data.details.predefined_type,
-                node_id=node_id,
-            )
+        return MAPPER[agent.agent_type].update_agent(agent, user_id, data, repository)

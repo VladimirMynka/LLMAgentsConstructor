@@ -8,7 +8,6 @@ from src.db.entities.provider import Provider
 from src.db.entities.settings import Settings
 from src.db.errors.graph import GraphNotFoundError
 from src.db.errors.settings import SettingsNotFoundError
-from src.db.errors.user import NotAuthorizedError
 from src.db.services.graph_service import GraphService
 from src.db.services.model_service import ModelService
 from src.db.services.provider_service import ProviderService
@@ -147,6 +146,13 @@ class SettingsService:
     def get_settings_model(setting: Settings, user_id: int) -> SettingsModel:
         """
         Get settings model.
+
+        Args:
+            setting: Settings - Settings entity
+            user_id: int - User id
+
+        Returns:
+            SettingsModel - Settings model
         """
         return SettingsModel(
             id=setting.id,
@@ -165,7 +171,21 @@ class SettingsService:
         settings_id: int,
         repository: Session,
     ) -> Settings:
-        """Check if the user has access to the settings."""
+        """
+        Check if the user has access to the settings.
+
+        Args:
+            user_id: int - User id
+            settings_id: int - Settings id
+            repository: Session - Database session
+
+        Returns:
+            Settings - Settings entity
+
+        Raises:
+            SettingsNotFoundError: If settings not found
+            ProviderNotFoundError: If provider not found
+        """
         settings = repository.get_one(Settings, Settings.id == settings_id)
         if settings is None:
             raise SettingsNotFoundError("Settings not found")

@@ -1,9 +1,9 @@
 from typing import TypeAlias
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from src.db.entities.hard_code_agent import PredefinedType
-from src.models.prompt import CreatePromptRequestModel, PromptModel
+from src.models.prompt import PromptModel
 from src.models.settings import CreateSettingsModel, SettingsModel
 
 AgentDetails: TypeAlias = BaseModel
@@ -16,8 +16,8 @@ class AIDetails(AgentDetails):
     AI agent details.
     """
 
-    prompt: PromptModel
-    settings: SettingsModel
+    prompt: PromptModel = Field(..., description="Prompt")
+    settings: SettingsModel = Field(..., description="Settings")
 
     class Config:
         schema_extra = {
@@ -34,9 +34,9 @@ class CreateUpdateAIDetails(CreateUpdateAgentDetails):
     If settings_id is None, settings will be created.
     """
 
-    prompt_id: int
-    settings_id: int | None
-    settings: CreateSettingsModel | None
+    prompt_id: int = Field(..., description="Prompt id")
+    settings_id: int | None = Field(..., description="Settings id")
+    settings: CreateSettingsModel | None = Field(..., description="Settings")
 
     @field_validator("settings", "settings_id")
     def validate_settings(cls, settings_value, values):
@@ -66,7 +66,7 @@ class ChatDetails(AIDetails):
     Chat agent details.
     """
 
-    stopwords: list[str]
+    stopwords: list[str] = Field(..., description="Stopwords")
 
     class Config:
         schema_extra = {
@@ -83,7 +83,7 @@ class CreateUpdateChatDetails(CreateUpdateAIDetails):
     Create or update chat agent details.
     """
 
-    stopwords: list[str]
+    stopwords: list[str] = Field(..., description="Stopwords")
 
     class Config:
         schema_extra = {
@@ -101,7 +101,7 @@ class CriticDetails(AIDetails):
     Critic agent details.
     """
 
-    criticized_id: int
+    criticized_id: int = Field(..., description="Criticized agent id")
 
     class Config:
         schema_extra = {
@@ -118,7 +118,7 @@ class CreateUpdateCriticDetails(CreateUpdateAIDetails):
     Create or update critic agent details.
     """
 
-    criticized_id: int
+    criticized_id: int = Field(..., description="Criticized agent id")
 
     class Config:
         schema_extra = {
@@ -136,7 +136,7 @@ class HardCodeDetails(AgentDetails):
     Hard-coded agent details.
     """
 
-    predefined_type: PredefinedType
+    predefined_type: PredefinedType = Field(..., description="Predefined type")
 
     class Config:
         schema_extra = {
@@ -151,11 +151,15 @@ class CreateUpdateHardCodeDetails(CreateUpdateAgentDetails):
     Create or update hard-coded agent details.
     """
 
-    predefined_type: PredefinedType
+    predefined_type: PredefinedType = Field(..., description="Predefined type")
+    url: str = Field(..., description="URL")
+    arguments: dict = Field(..., description="Arguments")
 
     class Config:
         schema_extra = {
             "example": {
                 "predefined_type": PredefinedType.replace_text,
+                "url": "https://example.com",
+                "arguments": {"key": "value"},
             }
         }

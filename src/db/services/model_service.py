@@ -253,6 +253,7 @@ class ModelService:
 
         return cls.get_models(provider_id, auth_token)
 
+    @staticmethod
     def get_expand_model(model: Model, user_id: int) -> ExpandModelModel:
         """
         Get expand model.

@@ -306,6 +306,12 @@ class PromptService:
     def get_prompt_model(prompt: Prompt) -> PromptModel:
         """
         Get prompt model.
+
+        Args:
+            prompt: Prompt - Prompt entity
+
+        Returns:
+            PromptModel - Prompt model
         """
         return PromptModel(
             id=prompt.id,
@@ -315,7 +321,15 @@ class PromptService:
 
     @staticmethod
     def create_prompt_without_commit(prompt_model: CreatePromptRequestModel) -> Prompt:
-        """Create prompt entity without committing."""
+        """
+        Create prompt entity without committing.
+
+        Args:
+            prompt_model: CreatePromptRequestModel - Prompt model
+
+        Returns:
+            Prompt - Prompt entity
+        """
         return Prompt(
             name=prompt_model.name,
             text=prompt_model.text,

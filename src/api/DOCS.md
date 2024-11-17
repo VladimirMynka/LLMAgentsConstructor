@@ -75,14 +75,14 @@
 - [X] `PUT /api/graphs/{graph_id}` - Update graph
 
 ### Agents
-- [ ] `GET /api/graphs/{graph_id}/agents` - Get all agents of graph
-- [ ] `POST /api/graphs/{graph_id}/agents/hard_coded` - Add hard-coded agent to graph
-- [ ] `POST /api/graphs/{graph_id}/agents/ai` - Add AI agent to graph
-- [ ] `POST /api/graphs/{graph_id}/agents/chat` - Add chat agent to graph
-- [ ] `POST /api/graphs/{graph_id}/agents/critic` - Add critic agent to graph
-- [ ] `GET /api/graphs/{graph_id}/agents/{agent_id}` - Get agent info
-- [ ] `DELETE /api/graphs/{graph_id}/agents/{agent_id}` - Delete agent from graph
-- [ ] `PUT /api/graphs/{graph_id}/agents/{agent_id}` - Update agent
+- [X] `GET /api/graphs/{graph_id}/agents` - Get all agents of graph
+- [X] `POST /api/graphs/{graph_id}/agents/hard_code` - Add hard-coded agent to graph
+- [X] `POST /api/graphs/{graph_id}/agents/ai` - Add AI agent to graph
+- [X] `POST /api/graphs/{graph_id}/agents/chat` - Add chat agent to graph
+- [X] `POST /api/graphs/{graph_id}/agents/critic` - Add critic agent to graph
+- [X] `GET /api/graphs/{graph_id}/agents/{agent_id}` - Get agent info
+- [X] `DELETE /api/graphs/{graph_id}/agents/{agent_id}` - Delete agent from graph
+- [X] `PUT /api/graphs/{graph_id}/agents/{agent_id}` - Update agent
 
 ### Nodes
 - [X] `GET /api/graphs/{graph_id}/nodes` - Get all nodes of graph

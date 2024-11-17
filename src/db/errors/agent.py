@@ -4,3 +4,8 @@ class AgentNotFoundError(Exception):
 
 class CriticizedAgentNotFoundError(AgentNotFoundError):
     pass
+
+
+class InvalidAgentTypeError(Exception):
+    pass
+
