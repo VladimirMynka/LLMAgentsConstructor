@@ -99,6 +99,11 @@
 ### Settings
 - [X] `GET /api/graphs/{graph_id}/available_settings` - Get all available settings in current context
 
+### Json
+- [ ] `GET /api/graphs/{graph_id}/json` - Get graph json
+- [ ] `PUT /api/graphs/{graph_id}/json` - Update graph by json
+- [ ] `POST /api/graphs/{graph_id}/json` - Create graph by json
+- [ ] `POST /api/graphs/{graph_id}/json/validate` - Validate graph json
 
 ## Runnings
 - [ ] `POST /api/graphs/{graph_id}/run` - Run graph
