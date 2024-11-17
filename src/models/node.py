@@ -1,16 +1,15 @@
 from enum import Enum
-from typing import Literal
 
 from pydantic import BaseModel
 
 from src.models.agent import AgentModel
-from src.models.document import DocumentModel
+from src.models.document_template import DocumentTemplateModel
 from src.models.graph import GraphModel
 
 
 class ContentType(str, Enum):
     AGENT = "agent"
-    DOCUMENT = "document"
+    DOCUMENT_TEMPLATE = "document_template"
 
 
 class NodeModel(BaseModel):
@@ -40,7 +39,7 @@ class ExtendedNodeModel(NodeModel):
     """
 
     graph: GraphModel
-    content: AgentModel | DocumentModel
+    content: AgentModel | DocumentTemplateModel
 
     class Config:
         schema_extra = {
@@ -58,8 +57,8 @@ class ExtendedNodeModel(NodeModel):
                     "x": 200,
                     "y": 200,
                     "graph": GraphModel.Config.schema_extra["example"],
-                    "content_type": ContentType.DOCUMENT,
-                    "content": DocumentModel.Config.schema_extra["example"],
+                    "content_type": ContentType.DOCUMENT_TEMPLATE,
+                    "content": DocumentTemplateModel.Config.schema_extra["example"],
                 },
             ]
         }

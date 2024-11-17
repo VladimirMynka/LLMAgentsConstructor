@@ -16,6 +16,7 @@ group_router.include_router(members_router)
 graphs_router.include_router(nodes_router)
 graphs_router.include_router(settings_router)
 graphs_router.include_router(agents_router)
+graphs_router.include_router(document_templates_router)
 
 main_router.include_router(auth_router)
 main_router.include_router(user_router)

@@ -5,3 +5,5 @@ class DocumentModel(BaseModel):
     """
     Document model.
     """
+
+    id: int

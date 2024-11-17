@@ -4,11 +4,13 @@ from src.db.decorators import use_repository
 from src.db.entities.agent import Agent, AgentType
 from src.db.entities.node import Node
 from src.db.errors.agent import AgentNotFoundError, InvalidAgentTypeError
-from src.db.services.agents.ai_agent_service import AIAgentService
-from src.db.services.agents.chat_agent_service import ChatAgentService
-from src.db.services.agents.critic_agent_service import CriticAgentService
-from src.db.services.agents.hard_code_agent_service import HardCodeAgentService
-from src.db.services.agents.interfaces import ISpecificAgentService
+from src.db.services.agents import (
+    AIAgentService,
+    ChatAgentService,
+    CriticAgentService,
+    HardCodeAgentService,
+    ISpecificAgentService,
+)
 from src.db.services.graph_service import GraphService
 from src.db.services.user_service import UserService
 from src.models.agent import CreateUpdateAgentModel, ExtendedAgentModel
@@ -222,11 +224,50 @@ class AgentService:
         if not agent:
             raise AgentNotFoundError("Agent not found")
 
+        node = agent.node
+
         MAPPER[agent.agent_type].delete_agent(agent_id, repository)
         repository.delete(agent)
+        repository.delete(node)
+
         repository.commit()
 
         return cls.get_agents(graph_id, auth_token, repository)
+
+    @classmethod
+    @use_repository
+    def get_agent_by_id(
+        cls,
+        agent_id: int,
+        graph_id: int,
+        auth_token: str,
+        repository: Session,
+    ) -> Agent:
+        """
+        Get agent by id.
+
+        Args:
+            agent_id: int - Agent id
+            graph_id: int - Graph id
+            auth_token: str - Authentication token
+            repository: Session - Database session
+
+        Returns:
+            Agent - Agent
+
+        Raises:
+            NotAuthorizedError: If the authentication token is invalid
+            GraphNotFoundError: If the graph is not found or user has no access to it
+            AgentNotFoundError: If the agent is not found
+        """
+        user_model = UserService.get_user_by_auth_token(auth_token, repository)
+        GraphService.check_user_has_access_to_graph(user_model.id, graph_id)
+
+        agent = repository.get_one(Agent, Agent.id == agent_id)
+        if (not agent) or (agent.node.graph_id != graph_id):
+            raise AgentNotFoundError("Agent not found")
+
+        return agent
 
     @classmethod
     def _make_agent_model(

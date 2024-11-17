@@ -84,11 +84,28 @@
 - [X] `DELETE /api/graphs/{graph_id}/agents/{agent_id}` - Delete agent from graph
 - [X] `PUT /api/graphs/{graph_id}/agents/{agent_id}` - Update agent
 
+### DocumentTemplates
+- [X] `GET /api/graphs/{graph_id}/document_templates` - Get all document templates of graph
+- [X] `POST /api/graphs/{graph_id}/document_templates` - Add document template to graph
+- [X] `GET /api/graphs/{graph_id}/document_templates/{document_template_id}` - Get document template info
+- [X] `PUT /api/graphs/{graph_id}/document_templates/{document_template_id}` - Update document template
+- [X] `DELETE /api/graphs/{graph_id}/document_templates/{document_template_id}` - Delete document template from graph
+
 ### Nodes
 - [X] `GET /api/graphs/{graph_id}/nodes` - Get all nodes of graph
 - [X] `GET /api/graphs/{graph_id}/nodes/{node_id}` - Get node info
 - [X] `PUT /api/graphs/{graph_id}/nodes/{node_id}` - Update node coordinates
 
-
 ### Settings
 - [X] `GET /api/graphs/{graph_id}/available_settings` - Get all available settings in current context
+
+
+## Runnings
+- [ ] `POST /api/graphs/{graph_id}/run` - Run graph
+- [ ] `GET /api/graphs/{graph_id}/run/{running_id}` - Get running info
+- [ ] `GET /api/graphs/{graph_id}/run/{running_id}/logs` - Get running logs
+- [ ] `GET /api/graphs/{graph_id}/run/{running_id}/status` - Get running status
+- [ ] `DELETE /api/graphs/{graph_id}/run/{running_id}` - Cancel running
+
+### Running outputs
+- [ ] `GET /api/graphs/{graph_id}/run/{running_id}/outputs` - Get running outputs

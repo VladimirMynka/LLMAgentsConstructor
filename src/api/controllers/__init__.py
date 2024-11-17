@@ -1,5 +1,6 @@
 from .agents import router as agents_router
 from .auth import router as auth_router
+from .document_templates import router as document_templates_router
 from .graphs import router as graphs_router
 from .group_graphs import router as group_graphs_router
 from .group_prompts import router as group_prompts_router
@@ -16,6 +17,7 @@ from .users import router as user_router
 __all__ = [
     "agents_router",
     "auth_router",
+    "document_templates_router",
     "group_router",
     "group_providers_router",
     "group_prompts_router",

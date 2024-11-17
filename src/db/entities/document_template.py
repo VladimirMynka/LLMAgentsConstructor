@@ -1,3 +1,5 @@
+from xml.dom.minidom import Document
+
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -17,6 +19,10 @@ class DocumentTemplate(Base):
 
     agent_id: Mapped[int] = mapped_column(ForeignKey("Agent.id"), nullable=False)
     agent: Mapped["Agent"] = relationship("Agent", back_populates="output_documents")  # type: ignore
+
+    instances: Mapped[list["Document"]] = relationship(
+        "Document", back_populates="template"
+    )
 
     __table_args__ = (
         UniqueConstraint("node_id", name="uix_document_template_node_id"),
